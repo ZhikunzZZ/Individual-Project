@@ -2,31 +2,125 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>FeedbackMATE Sign Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(to bottom, #59599B, white);
+            display: flex;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 20px;
+            display: flex;
+            width: 80%;
+            height: 60%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .left-content {
+            flex-basis: 30%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #59599B;
+            border-radius: 20px 0 0 20px;
+        }
+
+        .logo {
+            margin-bottom: 20px;
+            font-size: 30px;
+            color: #fff;
+        }
+
+        .info {
+            color: #fff;
+            text-align: center;
+        }
+
+        .right-content {
+            flex: 1.5;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #e1e4e8;
+            border-radius: 3px;
+        }
+
+        .signup-btn {
+            background-color: #59599B;
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            margin: auto;
+        }
+    </style>
 </head>
 <body>
-<h3>register</h3>
-<form method="POST" action="">
-    {% csrf_token %}
-    {{form.username.label}}
-    {{form.username}}
+{% load static %}
+<div class="container">
+    <div class="left-content">
+        <div class="logo">FeedbackMATE</div>
+        <img src="{% static 'img/OIP.png' %}" alt="Handshake Image" style="max-width: 60%; margin-bottom: 20px;">
+        <h2 class="info">After Class Feedback System for Students</h2>
+        <p class="info">Aims to provide a platform for students and teachers to communicate and provide feedback.</p>
+    </div>
+    <div class="right-content">
+        <h3>Register</h3>
+        <form method="POST" action="">
+            {% csrf_token %}
 
-    {{form.email.label}}
-    {{form.email}}
+            <label>{{form.username.label}}</label>
+            {{form.username}}
 
-    {{form.password1.label}}
-    {{form.password1}}
+            <label>{{form.email.label}}</label>
+            {{form.email}}
 
-    {{form.password2.label}}
-    {{form.password2}}
+            <label>{{form.password1.label}}</label>
+            {{form.password1}}
 
-    {{form.user_type.label}}
-    {{form.user_type}}
+            <label>{{form.password2.label}}</label>
+            {{form.password2}}
 
-    {{form.errors}}
+            <label>{{form.user_type.label}}</label>
+            {{form.user_type}}
 
+            {{form.errors}}
 
-    <input type="submit" name="Create User">
-</form>
+            <input type="submit" class="signup-btn" name="Create User" value="SIGN UP">
+        </form>
+    </div>
+</div>
 </body>
 </html>
+
+
+
+
+
