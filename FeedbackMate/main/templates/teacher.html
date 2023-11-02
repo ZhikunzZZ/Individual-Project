@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Main Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #59599B;
+            color: white;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .welcome-text {
+            margin-right: 10px;
+        }
+        .user-dropdown {
+        position: relative;
+        }
+
+        .user-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .user-dropdown-content a {
+            white-space: nowrap;  /* Ensure that the content doesn't wrap */
+            min-width: 100px;  /* Adjust as needed */
+            display: block;
+            text-align: left;
+            text-decoration: none;
+        }
+
+        .user-dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .user-dropdown:hover .user-dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">FeedbackMATE</div>
+        <div class="user-info">
+            <span class="welcome-text">Welcome back, {{ username }}</span>
+            <div class="user-dropdown">
+                <!-- 你可以替换下面的src链接为你的用户头像图片地址 -->
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20" cy="20" r="20" fill="#BDBDBD"/>
+                    <circle cx="20" cy="14" r="8" fill="white"/>
+                    <ellipse cx="20" cy="32" rx="10" ry="6" fill="white"/>
+                </svg>
+                <div class="user-dropdown-content">
+                    <a href="#">Edit info</a>
+                    <a href="{% url 'logout' %}">Sign out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 其他页面内容 -->
+
+</body>
+
+</html>

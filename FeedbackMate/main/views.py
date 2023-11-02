@@ -14,12 +14,12 @@ def index(request):
 @login_required(login_url='login')
 @teacher_required
 def teacherPage(request):
-    return HttpResponse("This is teacher page.")
+    return render(request, 'teacher.html',{'username': request.user.username})
 
 @login_required(login_url='login')
 @student_required
 def studentPage(request):
-    return HttpResponse("This is student page.")
+    return render(request, 'student.html',{'username': request.user.username})
 
 @unauthenticated_user
 def loginPage(request):
@@ -53,7 +53,7 @@ def registerPage(request):
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
-            user_type = form.cleaned_data.get('user_type')
+            user_type = request.POST.get('user_type')
 
             if user_type == 'student':
                 group, created = Group.objects.get_or_create(name='student')
