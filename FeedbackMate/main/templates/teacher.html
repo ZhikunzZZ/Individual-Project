@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +12,12 @@
             padding: 0;
             background-color: #f0f0f0;
         }
-
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            max-height: 100vh; /* 视口高度 */
+            overflow: hidden; /* 隐藏超出内容 */
+        }
         .header {
             display: flex;
             justify-content: space-between;
@@ -63,30 +68,156 @@
         .user-dropdown:hover .user-dropdown-content {
             display: block;
         }
+        .main-container {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden; /* 隐藏超出主容器部分 */
+        }
+        .sidebar::-webkit-scrollbar {
+            display: none;  /* 对于Chrome, Safari和Opera浏览器 */
+        }
+        .sidebar {
+            width: 75px; /* 或所需宽度 */
+            background-color: #EBEBEB; /* 侧边栏背景颜色 */
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            -ms-overflow-style: none;  /* 对于IE和Edge浏览器 */
+            scrollbar-width: none;  /* 对于Firefox浏览器 */
+            /* overflow-y: scroll;
+            overflow-x: hidden; */
+        }
+
+        .add-channel {
+            /* 特殊样式用于添加频道按钮，如果需要的话 */
+        }
+        .content {
+            flex-grow: 1; /* 占据剩余空间 */
+            overflow-y: auto; /* 若内容区域超出高度，显示滚动条 */
+        }
+        .channel-icon-container {
+            position: relative;
+            margin-bottom: 15px; /* 通道图标之间的间距 */
+            border: 2px solid black; /* 添加黑色边框 */
+            border-radius: 50%; /* 初始为圆形 */
+            width: 60px; /* 容器大小 */
+            height: 60px; /* 容器大小 */
+            display: flex; /* 为了居中内容 */
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+            transition: border-radius 0.1s; /* 平滑边框半径变换效果 */
+        }
+
+        .channel-icon {
+            max-width: 100%; /* 限制图标宽度，保证不溢出容器 */
+            max-height: 100%; /* 限制图标高度，保证不溢出容器 */
+            border-radius: 50%; /* 图标初始为圆形 */
+        }
+        .channel-icon-container:hover {
+            border-radius: 20%; /* 悬停时变为方形 */
+        }
+        .channel-icon-container:hover .channel-icon {
+            border-radius: 20%; /* 悬停时内部图标也变为方形 */
+        }
+
+        /* 弹框样式 */
+        .tooltip {
+            visibility: hidden;
+            background-color: #23272A;
+            color: #ffffff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 10px; /* 小一些的内边距 */
+            position: absolute;
+            z-index: 1;
+            top: 50%;
+            left: calc(100% + 10px); /* 在图标右侧10px处显示 */
+            transform: translateY(-50%); /* 垂直居中 */
+            white-space: nowrap; /* 防止文本换行 */
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease;
+        }
+
+        /* 弹框箭头样式 */
+        .tooltip::after {
+            content: " ";
+            position: absolute;
+            top: 50%;
+            right: 100%; /* 箭头位于弹框的左侧 */
+            margin-top: -5px; /* 向上移动，使箭头垂直居中 */
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent #23272A transparent transparent;
+        }
+
+        .channel-icon-container:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .add-channel:hover .channel-icon {
+            /* 可能需要特殊的变化 */
+        }
+
+        /* 特别为添加按钮设置的 tooltip 显示 */
+        .add-channel:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .custom-divider {
+            height: 2px;
+            background-color: black; /* 分割线颜色 */
+            width: 100%; /* 分割线宽度 */
+            margin: 20px 0; /* 分割线上下的间距 */
+        }
+        .section-nav {
+            width: 400px; /* Wider section nav */
+            background-color: #34495e; /* Adjusted color */
+            color: white;
+            padding: 10px;
+            overflow-y: auto; /* For scrolling */
+        }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <div class="logo">FeedbackMATE</div>
-        <div class="user-info">
-            <span class="welcome-text">Welcome back, {{ username }}</span>
-            <div class="user-dropdown">
-                <!-- 你可以替换下面的src链接为你的用户头像图片地址 -->
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="20" cy="20" r="20" fill="#BDBDBD"/>
-                    <circle cx="20" cy="14" r="8" fill="white"/>
-                    <ellipse cx="20" cy="32" rx="10" ry="6" fill="white"/>
-                </svg>
-                <div class="user-dropdown-content">
-                    <a href="#">Edit info</a>
-                    <a href="{% url 'logout' %}">Sign out</a>
+    <div class="app-container">
+        <div class="header">
+            <div class="logo">FeedbackMATE</div>
+            <div class="user-info">
+                <span class="welcome-text">Welcome back, {{ username }}</span>
+                <div class="user-dropdown">
+                    <!-- 你可以替换下面的src链接为你的用户头像图片地址 -->
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="20" fill="#BDBDBD"/>
+                        <circle cx="20" cy="14" r="8" fill="white"/>
+                        <ellipse cx="20" cy="32" rx="10" ry="6" fill="white"/>
+                    </svg>
+                    <div class="user-dropdown-content">
+                        <a href="#">Edit info</a>
+                        <a href="{% url 'logout' %}">Sign out</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 其他页面内容 -->
+        <div class="main-container">
+            <div class="sidebar">
+                <div class="channel-icon-container add-channel">
+                    <img src="{% static 'img/add_channel_icon.jpg' %}" alt="Add Channel" class="channel-icon">
+                    <span class="tooltip">Add a Channel</span>
+                </div>
+                <div class="custom-divider"></div>
+                {% for channel in channels %}
+                    <div class="channel-icon-container">
+                        <img src="{% static 'img/channel_icon.jpg' %}" alt="" class="channel-icon" onclick="location.href='{% url 'channel-detail' channel.id %}'">
+                        <span class="tooltip">{{ channel.name }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 
 </body>
 

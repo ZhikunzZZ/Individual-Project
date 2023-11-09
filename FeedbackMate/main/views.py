@@ -5,21 +5,37 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
-from .decorators import unauthenticated_user, teacher_required,student_required
+from .decorators import unauthenticated_user, teacher_required, student_required
+from .models import Channel, Section
+
+
 # Create your views here.
 @login_required(login_url='login')
 def index(request):
     return render(request, 'main.html')
 
+
 @login_required(login_url='login')
 @teacher_required
 def teacherPage(request):
-    return render(request, 'teacher.html',{'username': request.user.username})
+    # 查询当前用户关联的 Channel
+    user_channels = Channel.objects.filter(user=request.user)
+
+    # 将 channels 作为上下文传递给模板
+    return render(request, 'teacher.html', {
+        'username': request.user.username,
+        'channels': user_channels
+    })
 
 @login_required(login_url='login')
 @student_required
 def studentPage(request):
-    return render(request, 'student.html',{'username': request.user.username})
+    return render(request, 'student.html', {'username': request.user.username})
+
+
+def channel(request, channel_id):
+    return render(request, 'main.html')
+
 
 @unauthenticated_user
 def loginPage(request):
@@ -41,9 +57,11 @@ def loginPage(request):
             messages.info(request, 'Username or password incorrect')
     return render(request, 'login.html')
 
+
 def logoutUser(request):
     logout(request)
     return redirect('login')
+
 
 @unauthenticated_user
 def registerPage(request):
@@ -65,5 +83,5 @@ def registerPage(request):
             messages.success(request, 'Account was created for' + username)
             return redirect('login')
 
-    context = {'form':form}
+    context = {'form': form}
     return render(request, 'register.html', context)

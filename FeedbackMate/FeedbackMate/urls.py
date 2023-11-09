@@ -29,5 +29,6 @@ urlpatterns = [
     path('register/', views.registerPage, name="register"),
     path('student/', views.studentPage, name="student"),
     path('teacher/', views.teacherPage, name="teacher"),
+    path('channels/<int:channel_id>/', views.channel, name='channel-detail'),
 ]
 
