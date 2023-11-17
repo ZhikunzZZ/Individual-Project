@@ -1,0 +1,160 @@
+{% extends 'channel_detail.html' %}
+{% load static %}
+{% block styles %}
+{{ block.super }}
+<style>
+.top-section {
+    display: flex;
+    flex-wrap: wrap; /* 允许子元素换行 */
+    gap: 20px; /* 子元素之间的间距 */
+    margin-bottom: 20px; /* 和下面评论部分的间隔 */
+    overflow-y: auto;
+    height: 100vh;
+}
+
+
+.description-box {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-left: 30px;
+    background-color: #D9D9D9; /* 灰色背景 */
+    border-radius: 20px; /* 轻微的圆角 */
+    margin-top: 20px; /* 上间隔 */
+    width: 600px; /* 固定宽度 */
+    height: 200px; /* 固定高度 */
+    border: 2px solid black;
+}
+
+.channel-image {
+    width: 100px; /* 图片宽度 */
+    height: 100px; /* 图片高度 */
+    border-radius: 35%; /* 圆形图片 */
+    object-fit: cover; /* 保持图片比例 */
+    margin-right: 20px; /* 与右侧元素的间距 */
+    border: 2px solid black;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+
+    /* 调整标题、描述等的样式 */
+.channel-name {
+    margin-top: 10px;
+    margin-bottom: 0;
+    width: 450px;
+    height: 50px;
+}
+
+.section-title {
+    margin-bottom: 10px; /* 元素之间的间距 */
+    width: 300px;
+    height: 15px;
+}
+
+.section-description{
+    white-space: normal; /* 确保允许文本换行 */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    width: 400px;
+    height: 50px;
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.rating-box {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-left: 30px;
+    background-color: #D9D9D9; /* 灰色背景 */
+    border-radius: 20px; /* 轻微的圆角 */
+    margin-top: 20px; /* 上间隔 */
+    width: 600px; /* 固定宽度 */
+    height: 200px; /* 固定高度 */
+    border: 2px solid black;
+    float: right;
+}
+
+.comment-section {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-left: 30px;
+    background-color: #D9D9D9; /* 灰色背景 */
+    border-radius: 20px; /* 轻微的圆角 */
+    margin-top: 20px; /* 上间隔 */
+    width: 1200px; /* 固定宽度 */
+    height: 700px; /* 固定高度 */
+    border: 2px solid black;
+}
+
+.comment {
+    border-bottom: 1px solid #e0e0e0; /* 评论之间的分隔线 */
+    padding: 10px 0;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+}
+
+.user-image {
+    width: 40px; /* 调整为实际需要的大小 */
+    height: 40px;
+    border-radius: 50%; /* 圆形头像 */
+    margin-right: 10px;
+}
+
+.username {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.comment-content {
+    margin-top: 5px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+{{ block.super}}
+<div class="top-section">
+    <div class="description-box">
+        <img src="{% static 'img/channel_icon.jpg' %}" alt="Channel Image" class="channel-image">
+        <div class="channel-info">
+            <h2 class="channel-name">{{ current_channel.name }}</h2>
+            <p class="section-title"># &nbsp;{{ current_section.title }}</p>
+            <p class="section-description">{{ current_section.description }}</p>
+        </div>
+    </div>
+    <div class="rating-box">
+    </div>
+    <div class="comment-section">
+    <h2>Comments</h2>
+    {% for comment in comments %}
+    <div class="comment">
+        <div class="comment-header">
+            <img src="{{ comment.user.profile_image_url }}" alt="User Image" class="user-image">
+            <span class="username">{{ comment.user.username }}</span>
+        </div>
+        <p class="comment-content">{{ comment.text }}</p>
+        <!-- 添加其他评论信息，如日期等 -->
+    </div>
+    {% endfor %}
+</div>
+</div>
+
+
+
+
+
+
+<!-- 此处跳过 rating 部分 -->
+
+
+
+
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends 'teacher.html' %}
+{% load static %}
+{% block styles %}
+{{ block.super }}
+<style>
+/* 包裹section项的导航容器 */
+.section-nav {
+    background-color: #F2F3F5;  /* 设置背景颜色 */
+    padding: 10px;  /* 内边距 */
+    /* 其他需要的样式 */
+    box-shadow: 5px 0 5px -5px rgba(0,0,0,0.5), -5px 0 5px -5px rgba(0,0,0,0.5);
+    width: 300px;
+    min-width: 300px;
+}
+
+.pin-code-display {
+    padding: 10px;
+    margin-bottom: 10px; /* 与下方section项的间隔 */
+    border-bottom: 2px solid black; /* 加粗的分隔线 */
+    background-color: #F2F3F5; /* 背景颜色 */
+    text-align: left;
+    font-weight: bold; /* 加粗字体显示pin code */
+    font-size: 1.2em; /* 字体放大 */
+}
+
+.section-item {
+    display: block;  /* 让<a>标签表现得像块级元素 */
+    padding: 10px;
+    margin: 5px 0; /* 项与项之间的间隔 */
+    text-decoration: none;  /* 去除下划线 */
+    font-weight: bold;
+    font-size: 1.1em; /* 字体放大 */
+    color: #000000;  /* 文本颜色 */
+    border-radius: 4px;  /* 圆角边框 */
+    transition: background-color 0.3s, box-shadow 0.3s;  /* 平滑背景和阴影变化效果 */
+    border: 2px solid transparent; /* 初始透明边框 */
+    width: 300px;
+    min-width: 300px;
+    box-sizing: border-box;
+    overflow: hidden;       /* 隐藏超出容器的内容 */
+    white-space: nowrap;    /* 禁止文本换行 */
+    text-overflow: ellipsis; /* 超出部分显示为省略号 */
+}
+
+/* 悬停效果 */
+.section-item:hover {
+    background-color: #D9D9D9; /* 悬停时的背景色 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* 边框效果 */
+    border-color: #D9D9D9; /* 悬停时边框颜色 */
+}
+/* 自定义section工具提示样式 */
+.section-tooltip .section-tooltiptext {
+  visibility: hidden;
+  width: auto; /* 宽度根据内容自适应 */
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 10px; /* 适当的填充 */
+
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%); /* 确保工具提示左右居中 */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* 工具提示箭头样式 */
+.section-tooltip .section-tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+.section-tooltip:hover .section-tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.selected-channel {
+    position: relative;  /* 为伪元素定位做准备 */
+    border: 3px solid #444791;
+    border-radius: 20%;
+    background-color: #BCBCBF;
+}
+
+.selected-channel-icon {
+    /* 这里复制您的悬停时图标样式 */
+    max-width: 100%; /* 限制图标宽度，保证不溢出容器 */
+    max-height: 100%; /* 限制图标高度，保证不溢出容器 */
+    border-radius: 20%; /* 图标初始为圆形 */
+}
+
+
+
+</style>
+{% endblock styles %}
+
+{% block channel %}
+    {% for channel in channels %}
+    <div class="channel-icon-container {% if channel.id == current_channel.id %}selected-channel{% endif %}">
+        <img src="{% static 'img/channel_icon.jpg' %}" alt="" class="channel-icon {% if channel.id == current_channel.id %}selected-channel-icon{% endif %}" onclick="location.href='{% url 'channel-detail' channel.id %}'">
+        <span class="tooltip">{{ channel.name }}</span>
+    </div>
+    {% endfor %}
+{% endblock %}
+{% block content %}
+<div class="section-nav">
+    <div class="pin-code-display">
+        Pin code: {{ current_channel.id }}
+    </div>
+    {% for section in sections %}
+      <div class="section-tooltip">
+        <a href="{% url 'section' channel_id=section.channel.id section_id=section.id %}" class="section-item">
+          #&nbsp;&nbsp;&nbsp; {{ section.title }}
+        </a>
+        <span class="section-tooltiptext">{{ section.title }}</span>
+      </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

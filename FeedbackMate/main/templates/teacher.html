@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Main Page</title>
+    {% block styles %}
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,14 +17,14 @@
             display: flex;
             flex-direction: column;
             max-height: 100vh; /* 视口高度 */
-            overflow: hidden; /* 隐藏超出内容 */
+
         }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px;
-            background-color: #59599B;
+            background-color: #444791;
             color: white;
         }
 
@@ -79,6 +80,7 @@
         .sidebar {
             width: 75px; /* 或所需宽度 */
             background-color: #EBEBEB; /* 侧边栏背景颜色 */
+            min-height: 100vh;
             padding: 10px;
             display: flex;
             flex-direction: column;
@@ -86,12 +88,23 @@
             flex-shrink: 0;
             -ms-overflow-style: none;  /* 对于IE和Edge浏览器 */
             scrollbar-width: none;  /* 对于Firefox浏览器 */
-            /* overflow-y: scroll;
-            overflow-x: hidden; */
+            overflow-y: visible;
+            overflow-x: visible;
+        }
+        .channel-divider {
+            height: 2px; /* 或者足够显示边框的最小高度 */
+            background-color: black; /* 临时背景色以确认元素位置 */
+            width: 100%; /* 确保宽度是满的 */
+            margin: 10px 0; /* 上下边距 */
+            position: sticky;
+            top: 0; /* 保持在顶部 */
+            z-index: 10; /* 确保它在滚动内容之上 */
         }
 
         .add-channel {
             /* 特殊样式用于添加频道按钮，如果需要的话 */
+            margin-bottom: 10px; /* 与下方section项的间隔 */
+            border-bottom: 2px solid black; /* 加粗的分隔线 */
         }
         .content {
             flex-grow: 1; /* 占据剩余空间 */
@@ -165,20 +178,9 @@
             visibility: visible;
             opacity: 1;
         }
-        .custom-divider {
-            height: 2px;
-            background-color: black; /* 分割线颜色 */
-            width: 100%; /* 分割线宽度 */
-            margin: 20px 0; /* 分割线上下的间距 */
-        }
-        .section-nav {
-            width: 400px; /* Wider section nav */
-            background-color: #34495e; /* Adjusted color */
-            color: white;
-            padding: 10px;
-            overflow-y: auto; /* For scrolling */
-        }
+
     </style>
+    {% endblock styles %}
 </head>
 
 <body>
@@ -208,14 +210,18 @@
                     <img src="{% static 'img/add_channel_icon.jpg' %}" alt="Add Channel" class="channel-icon">
                     <span class="tooltip">Add a Channel</span>
                 </div>
-                <div class="custom-divider"></div>
+                <div class="channel-divider"></div>
+                {% block channel %}
                 {% for channel in channels %}
                     <div class="channel-icon-container">
                         <img src="{% static 'img/channel_icon.jpg' %}" alt="" class="channel-icon" onclick="location.href='{% url 'channel-detail' channel.id %}'">
                         <span class="tooltip">{{ channel.name }}</span>
                     </div>
                 {% endfor %}
+                {% endblock %}
             </div>
+            {% block content %}
+            {% endblock %}
         </div>
     </div>
 

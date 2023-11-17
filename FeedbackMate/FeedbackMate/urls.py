@@ -29,6 +29,7 @@ urlpatterns = [
     path('register/', views.registerPage, name="register"),
     path('student/', views.studentPage, name="student"),
     path('teacher/', views.teacherPage, name="teacher"),
-    path('channels/<int:channel_id>/', views.channel, name='channel-detail'),
+    path('teacher/channel/<int:channel_id>/', views.channel, name='channel-detail'),
+    path('teacher/channel/<int:channel_id>/section/<int:section_id>/', views.section, name='section'),
 ]
 

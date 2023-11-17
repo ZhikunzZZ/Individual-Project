@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from .decorators import unauthenticated_user, teacher_required, student_required
-from .models import Channel, Section
+from .models import Channel, Section, Comment
 
 
 # Create your views here.
@@ -24,8 +24,10 @@ def teacherPage(request):
     # 将 channels 作为上下文传递给模板
     return render(request, 'teacher.html', {
         'username': request.user.username,
-        'channels': user_channels
+        'channels': user_channels,
     })
+
+# def teacherSectionPage(request, channel_id):
 
 @login_required(login_url='login')
 @student_required
@@ -34,7 +36,35 @@ def studentPage(request):
 
 
 def channel(request, channel_id):
-    return render(request, 'main.html')
+    user_channels = Channel.objects.filter(user=request.user)
+    current_channel = Channel.objects.get(id=channel_id)
+    sections = Section.objects.filter(channel=current_channel)
+
+    # Render a new template while keeping the layout consistent with 'teacher.html'
+    return render(request, 'channel_detail.html', {
+        'username': request.user.username,
+        'current_channel': current_channel,
+        'sections': sections,
+        'channels': user_channels,
+    })
+
+
+def section(request, channel_id, section_id):
+    user_channels = Channel.objects.filter(user=request.user)
+    current_channel = Channel.objects.get(id=channel_id)
+    sections = Section.objects.filter(channel=current_channel)
+    current_section = Section.objects.get(id=section_id)
+    comments = Comment.objects.filter(section=current_section)
+
+    # Render a new template while keeping the layout consistent with 'teacher.html'
+    return render(request, 'section_detail.html', {
+        'username': request.user.username,
+        'current_channel': current_channel,
+        'sections': sections,
+        'current_section': current_section,
+        'channels': user_channels,
+        'comments': comments,
+    })
 
 
 @unauthenticated_user
