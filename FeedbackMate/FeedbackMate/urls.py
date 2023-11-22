@@ -31,5 +31,6 @@ urlpatterns = [
     path('teacher/', views.teacherPage, name="teacher"),
     path('teacher/channel/<int:channel_id>/', views.channel, name='channel-detail'),
     path('teacher/channel/<int:channel_id>/section/<int:section_id>/', views.section, name='section'),
-]
+    path('teacher/create_channel/', views.createChannel, name="create-channel"),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

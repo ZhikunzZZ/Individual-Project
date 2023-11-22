@@ -207,14 +207,14 @@
         <div class="main-container">
             <div class="sidebar">
                 <div class="channel-icon-container add-channel">
-                    <img src="{% static 'img/add_channel_icon.jpg' %}" alt="Add Channel" class="channel-icon">
+                    <img src="{% static 'img/add_channel_icon.jpg' %}" alt="Add Channel" class="channel-icon" onclick="location.href='{% url 'create-channel' %}'">
                     <span class="tooltip">Add a Channel</span>
                 </div>
                 <div class="channel-divider"></div>
                 {% block channel %}
                 {% for channel in channels %}
                     <div class="channel-icon-container">
-                        <img src="{% static 'img/channel_icon.jpg' %}" alt="" class="channel-icon" onclick="location.href='{% url 'channel-detail' channel.id %}'">
+                        <img src="{{ channel.image.url }}" alt="" class="channel-icon" onclick="location.href='{% url 'channel-detail' channel.id %}'">
                         <span class="tooltip">{{ channel.name }}</span>
                     </div>
                 {% endfor %}

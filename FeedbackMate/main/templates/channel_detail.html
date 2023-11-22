@@ -106,7 +106,7 @@
 {% block channel %}
     {% for channel in channels %}
     <div class="channel-icon-container {% if channel.id == current_channel.id %}selected-channel{% endif %}">
-        <img src="{% static 'img/channel_icon.jpg' %}" alt="" class="channel-icon {% if channel.id == current_channel.id %}selected-channel-icon{% endif %}" onclick="location.href='{% url 'channel-detail' channel.id %}'">
+        <img src="{{ channel.image.url }}" alt="" class="channel-icon {% if channel.id == current_channel.id %}selected-channel-icon{% endif %}" onclick="location.href='{% url 'channel-detail' channel.id %}'">
         <span class="tooltip">{{ channel.name }}</span>
     </div>
     {% endfor %}

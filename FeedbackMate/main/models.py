@@ -1,11 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import User
+import os
+from uuid import uuid4
 
+# Function to generate a unique path for each uploaded image
+def channel_image_path(instance, filename):
+    # Get file extension
+    ext = filename.split('.')[-1]
+
+    # Generate a unique filename using UUID
+    filename = f'{uuid4()}.{ext}'
+
+    # Return the complete file path
+    return os.path.join('channel_images', str(instance.user.id), filename)
 
 class Channel(models.Model):
     name = models.CharField(max_length=70)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField(max_length=500, blank=True)
+    image = models.ImageField(upload_to=channel_image_path, default='img/channel_icon.jpg')
 
     def __str__(self):
         return self.name

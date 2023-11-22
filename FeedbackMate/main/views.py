@@ -49,6 +49,17 @@ def channel(request, channel_id):
     })
 
 
+def createChannel(request):
+    if request.method == 'POST':
+        channel_name = request.POST.get('channel-name')
+        channel_info = request.POST.get('channel-info')
+        channel_image = request.FILES.get('channel-image')
+        print(channel_image)
+        Channel.objects.create(name=channel_name, description=channel_info, user=request.user, image=channel_image)
+        return redirect('teacher')
+    return render(request, 'create_channel.html', {'username': request.user.username})
+
+
 def section(request, channel_id, section_id):
     user_channels = Channel.objects.filter(user=request.user)
     current_channel = Channel.objects.get(id=channel_id)
@@ -84,7 +95,7 @@ def loginPage(request):
             else:
                 return redirect('index')
         else:
-            messages.info(request, 'Username or password incorrect')
+            messages.error(request, 'Username or password incorrect')
     return render(request, 'login.html')
 
 

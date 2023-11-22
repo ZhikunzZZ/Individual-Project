@@ -128,7 +128,7 @@
 {{ block.super}}
 <div class="top-section">
     <div class="description-box">
-        <img src="{% static 'img/channel_icon.jpg' %}" alt="Channel Image" class="channel-image">
+        <img src= "{{ current_channel.image.url }}" alt="Channel Image" class="channel-image">
         <div class="channel-info">
             <h2 class="channel-name">{{ current_channel.name }}</h2>
             <p class="section-title"># &nbsp;{{ current_section.title }}</p>
