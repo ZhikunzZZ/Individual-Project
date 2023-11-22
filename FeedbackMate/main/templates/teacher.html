@@ -88,15 +88,16 @@
             flex-shrink: 0;
             -ms-overflow-style: none;  /* 对于IE和Edge浏览器 */
             scrollbar-width: none;  /* 对于Firefox浏览器 */
-            overflow-y: visible;
+            overflow-y: scroll;
             overflow-x: visible;
         }
         .channel-divider {
-            height: 2px; /* 或者足够显示边框的最小高度 */
+            height: 0; /* 或者足够显示边框的最小高度 */
             background-color: black; /* 临时背景色以确认元素位置 */
+            border: 1px solid black;
             width: 100%; /* 确保宽度是满的 */
-            margin: 10px 0; /* 上下边距 */
-            position: sticky;
+            margin-top: 10px; /* 上方间隔 */
+            margin-bottom: 10px; /* 下方间隔 */
             top: 0; /* 保持在顶部 */
             z-index: 10; /* 确保它在滚动内容之上 */
         }
@@ -137,13 +138,13 @@
 
         /* 弹框样式 */
         .tooltip {
+            position: fixed;
             visibility: hidden;
             background-color: #23272A;
             color: #ffffff;
             text-align: center;
             border-radius: 6px;
             padding: 5px 10px; /* 小一些的内边距 */
-            position: absolute;
             z-index: 1;
             top: 50%;
             left: calc(100% + 10px); /* 在图标右侧10px处显示 */
@@ -208,7 +209,7 @@
             <div class="sidebar">
                 <div class="channel-icon-container add-channel">
                     <img src="{% static 'img/add_channel_icon.jpg' %}" alt="Add Channel" class="channel-icon" onclick="location.href='{% url 'create-channel' %}'">
-                    <span class="tooltip">Add a Channel</span>
+                    <span class="tooltip">Create new channel</span>
                 </div>
                 <div class="channel-divider"></div>
                 {% block channel %}
@@ -224,6 +225,29 @@
             {% endblock %}
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var channelIcons = document.querySelectorAll('.channel-icon-container');
+
+            channelIcons.forEach(function(channelIcon) {
+                var tooltip = channelIcon.querySelector('.tooltip');
+
+                channelIcon.addEventListener('mouseenter', function(e) {
+                    var iconRect = this.getBoundingClientRect();
+                    var tooltipVerticalCenter = iconRect.top + (iconRect.height / 2) - (tooltip.offsetHeight / 2);
+                    // 设置 tooltip 的顶部位置为图标垂直中心，并使其右侧紧贴图标的右侧
+                    tooltip.style.top = `${tooltipVerticalCenter + (tooltip.offsetHeight/2)}px`;
+                    tooltip.style.left = `${iconRect.right + 7}px`; // 图标右侧留出一定间隙
+                    tooltip.style.visibility = 'visible';
+                });
+
+                channelIcon.addEventListener('mouseleave', function(e) {
+                    // 鼠标离开时隐藏 tooltip
+                    tooltip.style.visibility = 'hidden';
+                });
+            });
+        });
+    </script>
 
 </body>
 

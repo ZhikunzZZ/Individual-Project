@@ -54,9 +54,12 @@ def createChannel(request):
         channel_name = request.POST.get('channel-name')
         channel_info = request.POST.get('channel-info')
         channel_image = request.FILES.get('channel-image')
-        print(channel_image)
-        Channel.objects.create(name=channel_name, description=channel_info, user=request.user, image=channel_image)
-        return redirect('teacher')
+        if channel_image is not None:
+            Channel.objects.create(name=channel_name, description=channel_info, user=request.user, image=channel_image)
+            return redirect('teacher')
+        else:
+            Channel.objects.create(name=channel_name, description=channel_info, user=request.user)
+            return redirect('teacher')
     return render(request, 'create_channel.html', {'username': request.user.username})
 
 
