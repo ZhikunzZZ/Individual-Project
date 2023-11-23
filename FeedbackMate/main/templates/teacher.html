@@ -81,6 +81,7 @@
             width: 75px; /* 或所需宽度 */
             background-color: #EBEBEB; /* 侧边栏背景颜色 */
             min-height: 100vh;
+            max-height: 100vh;
             padding: 10px;
             display: flex;
             flex-direction: column;
@@ -88,8 +89,8 @@
             flex-shrink: 0;
             -ms-overflow-style: none;  /* 对于IE和Edge浏览器 */
             scrollbar-width: none;  /* 对于Firefox浏览器 */
-            overflow-y: scroll;
-            overflow-x: visible;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
         .channel-divider {
             height: 0; /* 或者足够显示边框的最小高度 */
@@ -107,13 +108,10 @@
             margin-bottom: 10px; /* 与下方section项的间隔 */
             border-bottom: 2px solid black; /* 加粗的分隔线 */
         }
-        .content {
-            flex-grow: 1; /* 占据剩余空间 */
-            overflow-y: auto; /* 若内容区域超出高度，显示滚动条 */
-        }
+
         .channel-icon-container {
             position: relative;
-            margin-bottom: 15px; /* 通道图标之间的间距 */
+            margin-bottom: 18px; /* 通道图标之间的间距 */
             border: 2px solid black; /* 添加黑色边框 */
             border-radius: 50%; /* 初始为圆形 */
             width: 60px; /* 容器大小 */
@@ -179,6 +177,31 @@
             visibility: visible;
             opacity: 1;
         }
+        .custom-context-menu {
+            position: absolute;
+            background: #333;
+            border-radius: 5px;
+            padding: 10px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000; /* 确保菜单显示在最上层 */
+            display: none;
+        }
+
+        .custom-context-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .custom-context-menu ul li {
+            padding: 8px 15px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .custom-context-menu ul li:hover {
+            background: #555;
+        }
 
     </style>
     {% endblock styles %}
@@ -191,14 +214,9 @@
             <div class="user-info">
                 <span class="welcome-text">Welcome back, {{ username }}</span>
                 <div class="user-dropdown">
-                    <!-- 你可以替换下面的src链接为你的用户头像图片地址 -->
-                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="20" cy="20" r="20" fill="#BDBDBD"/>
-                        <circle cx="20" cy="14" r="8" fill="white"/>
-                        <ellipse cx="20" cy="32" rx="10" ry="6" fill="white"/>
-                    </svg>
+                    <img src="{{ user_image }}" alt="User Image" width="40" height="40" style="border-radius: 50%;">
                     <div class="user-dropdown-content">
-                        <a href="#">Edit info</a>
+                        <a href="{% url 'personal-info' %}">Edit info</a>
                         <a href="{% url 'logout' %}">Sign out</a>
                     </div>
                 </div>
@@ -207,14 +225,14 @@
 
         <div class="main-container">
             <div class="sidebar">
-                <div class="channel-icon-container add-channel">
+                <div class="channel-icon-container add-channel create-channel-btn">
                     <img src="{% static 'img/add_channel_icon.jpg' %}" alt="Add Channel" class="channel-icon" onclick="location.href='{% url 'create-channel' %}'">
                     <span class="tooltip">Create new channel</span>
                 </div>
                 <div class="channel-divider"></div>
                 {% block channel %}
                 {% for channel in channels %}
-                    <div class="channel-icon-container">
+                    <div class="channel-icon-container" data-channel-id="{{ channel.id }}">
                         <img src="{{ channel.image.url }}" alt="" class="channel-icon" onclick="location.href='{% url 'channel-detail' channel.id %}'">
                         <span class="tooltip">{{ channel.name }}</span>
                     </div>
@@ -225,6 +243,13 @@
             {% endblock %}
         </div>
     </div>
+    <div id="customContextMenu" class="custom-context-menu" style="display: none;">
+        <ul>
+            <li id="edit-channel">Edit Info</li>
+            <li id="delete-channel">Delete Channel</li>
+        </ul>
+    </div>
+    <input type="hidden" id="csrfToken" value="{{ csrf_token }}">
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var channelIcons = document.querySelectorAll('.channel-icon-container');
@@ -247,6 +272,88 @@
                 });
             });
         });
+        document.addEventListener('DOMContentLoaded', function() {
+            var channelIcons = document.querySelectorAll('.channel-icon-container');
+            var customContextMenu = document.getElementById('customContextMenu');
+            channelIcons.forEach(function(channelIcon) {
+                channelIcon.addEventListener('contextmenu', function(e) {
+                    if (channelIcon.classList.contains('create-channel-btn')) {
+                        // 如果是创建按钮，不显示自定义菜单
+                        return;
+                    }
+
+                    e.preventDefault(); // 阻止默认的右键菜单
+
+                    // 获取鼠标位置并设置菜单位置
+                    customContextMenu.style.top = e.pageY + 'px';
+                    customContextMenu.style.left = e.pageX + 'px';
+                    customContextMenu.style.display = 'block';
+
+                    // 设置当前操作的频道 ID
+                    var channelId = this.getAttribute('data-channel-id');
+                    console.log(channelId)
+                    var editButton = customContextMenu.querySelector('#edit-channel');
+                    var deleteButton = customContextMenu.querySelector('#delete-channel');
+
+                    editButton.onclick = function() {console.log('Editing info for channel ' + channelId);};
+                    deleteButton.onclick = function() { deleteChannel(channelId); };
+                });
+            });
+
+            // 点击其他地方时关闭自定义菜单
+            document.addEventListener('click', function(e) {
+                customContextMenu.style.display = 'none';
+            });
+        });
+        function deleteChannel(channelId) {
+            // 弹出确认框
+            var confirmDelete = confirm("Are you sure you want to delete this channel?");
+            if (confirmDelete) {
+                // 如果用户确认，发送 AJAX 请求到后端删除频道
+                console.log('Channel ' + channelId + ' will be deleted.');
+                var csrfToken = document.getElementById('csrfToken').value;
+                fetch('/delete-channel/' + channelId + '/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken, // 从 cookie 中获取 CSRF 令牌
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 'channel_id': channelId }) // 发送频道 ID
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data); // 处理响应数据
+                    if (data.success) {
+                        // 如果删除成功，可以刷新页面或从 DOM 中移除频道元素
+                        location.reload(); // 或者 document.getElementById('channel-' + channelId).remove();
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error); // 处理错误情况
+                });
+            }
+        }
+
+        // 用于获取 CSRF 令牌的辅助函数
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     </script>
 
 </body>

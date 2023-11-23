@@ -29,8 +29,10 @@ urlpatterns = [
     path('register/', views.registerPage, name="register"),
     path('student/', views.studentPage, name="student"),
     path('teacher/', views.teacherPage, name="teacher"),
+    path('edit-personal-info/', views.editPersonalInfoPage, name="personal-info"),
     path('teacher/channel/<int:channel_id>/', views.channel, name='channel-detail'),
     path('teacher/channel/<int:channel_id>/section/<int:section_id>/', views.section, name='section'),
     path('teacher/create_channel/', views.createChannel, name="create-channel"),
+    path('delete-channel/<int:channel_id>/', views.delete_channel, name='delete-channel'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
