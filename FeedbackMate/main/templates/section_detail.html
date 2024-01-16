@@ -120,6 +120,11 @@
 .comment-content {
     margin-top: 5px;
 }
+.read-badge {
+    color: green;
+    font-weight: bold;
+    /* 其他需要的样式 */
+}
 
 </style>
 {% endblock %}
@@ -139,24 +144,112 @@
     </div>
     <div class="comment-section">
     {% for comment in comments %}
-    <div class="comment">
+    <div class="comment" {% if comment.read %}style="border-color: blue;"{% endif %}>
         <div class="comment-header">
             <img src="{% static 'img/user.png ' %}" alt="User Image" class="user-image">
             <span class="username">{{ comment.user.username }}</span>
         </div>
         <p class="comment-content">{{ comment.text }}</p>
-        <!-- 添加其他评论信息，如日期等 -->
+        {% if comment.reply %}
+            <div class="reply-content">{{ comment.reply }}</div>
+        {% endif %}
+        <button class="reply-button" data-comment-id="{{ comment.id }}">Reply</button>
+        <div class="reply-box" style="display:none;">
+            <textarea class="reply-text">{{ comment.reply }}</textarea>
+            <button class="submit-reply" data-comment-id="{{ comment.id }}">Submit</button>
+        </div>
+        {% if comment.read %}
+            <span class="read-badge">Readed</span>
+        {% else %}
+            <button class="mark-as-read" data-comment-id="{{ comment.id }}">Mark as Read</button>
+        {% endif %}
     </div>
     {% endfor %}
+    </div>
 </div>
-</div>
+<script>
+document.querySelectorAll('.mark-as-read').forEach(button => {
+    button.addEventListener('click', function() {
+        const commentDiv = this.closest('.comment'); // 获取最近的评论框
+        const commentId = this.dataset.commentId;
+
+        fetch(`/mark-comment-as-read/${commentId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                commentDiv.style.borderColor = 'blue'; // 改变边框颜色
+                const readBadge = document.createElement('span');
+                readBadge.textContent = 'Readed';
+                readBadge.classList.add('read-badge'); // 添加一个class以便于样式设定
+                commentDiv.appendChild(readBadge); // 将标志添加到评论框
+
+                this.remove(); // 移除按钮
+            }
+        });
+    });
+});
 
 
 
+document.querySelectorAll('.reply-button').forEach(button => {
+    button.addEventListener('click', function() {
+        const commentDiv = this.closest('.comment');
+        const replyBox = commentDiv.querySelector('.reply-box');
+        replyBox.style.display = 'block';
+    });
+});
+
+document.querySelectorAll('.submit-reply').forEach(button => {
+    button.addEventListener('click', function() {
+        const commentDiv = this.closest('.comment');
+        const replyText = commentDiv.querySelector('.reply-text').value;
+        console.log("Reply text:", replyText);
+        const commentId = this.dataset.commentId;
+        console.log("id:", commentId);
+        fetch(`/update-comment-reply/${commentId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ reply: replyText }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Response data:", data);
+            if (data.success) {
+                const replyContentDiv = commentDiv.querySelector('.reply-content');
+                replyContentDiv.textContent = replyText;
+                commentDiv.querySelector('.reply-box').style.display = 'none';
+            }
+        });
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+</script>
 
 
 
-<!-- 此处跳过 rating 部分 -->
 
 
 

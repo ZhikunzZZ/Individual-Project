@@ -34,5 +34,7 @@ urlpatterns = [
     path('teacher/channel/<int:channel_id>/section/<int:section_id>/', views.section, name='section'),
     path('teacher/create_channel/', views.createChannel, name="create-channel"),
     path('delete-channel/<int:channel_id>/', views.delete_channel, name='delete-channel'),
+    path('mark-comment-as-read/<int:comment_id>/', views.mark_comment_as_read, name='mark-comment-as-read'),
+    path('update-comment-reply/<int:comment_id>/', views.update_comment_reply, name='update-comment-reply'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

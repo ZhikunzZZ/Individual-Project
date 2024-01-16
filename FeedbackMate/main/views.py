@@ -125,6 +125,23 @@ def section(request, channel_id, section_id):
         'user_image': user_info.user_image.url,
     })
 
+def mark_comment_as_read(request, comment_id):
+    # 确保请求是POST并且用户已认证
+    if request.method == "POST" and request.user.is_authenticated:
+        comment = Comment.objects.get(id=comment_id)
+        comment.read = True
+        comment.save()
+        return JsonResponse({"success": True})
+    return JsonResponse({"success": False})
+
+def update_comment_reply(request, comment_id):
+    if request.method == 'POST':
+        comment = Comment.objects.get(id=comment_id)
+        data = json.loads(request.body)
+        comment.reply = data.get('reply')
+        comment.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
 
 @unauthenticated_user
 def loginPage(request):
