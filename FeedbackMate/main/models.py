@@ -56,6 +56,7 @@ class Comment(models.Model):
     text = models.TextField(max_length=500)  # 评论内容
     read = models.BooleanField(default=False)
     reply = models.TextField(blank=True, null=True)
+    likes = models.IntegerField(default=0)
 
     def __str__(self):
         return f"Comment by {self.user.username} on {self.section.title}"
