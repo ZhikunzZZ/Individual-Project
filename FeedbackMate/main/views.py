@@ -96,6 +96,20 @@ def createChannel(request):
         'user_image': user_info.user_image.url,
     })
 
+def createSection(request, channel_id):
+    channel = get_object_or_404(Channel, pk=channel_id)
+    if request.method == 'POST':
+        section_title = request.POST.get('channel-name')
+        section_des = request.POST.get('channel-info')
+        new_section = Section.objects.create(channel=channel, title=section_title, description=section_des)
+        return redirect('section', channel_id=channel_id, section_id=new_section.id)
+    user_info = UserInfo.objects.get(user=request.user)
+    return render(request, 'create_section.html', {
+        'username': user_info.profile_name,
+        'user_image': user_info.user_image.url,
+        'channel': channel
+    })
+
 
 @require_POST
 def delete_channel(request, channel_id):

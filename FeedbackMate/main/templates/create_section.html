@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Main Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #59599B;
+            color: white;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .welcome-text {
+            margin-right: 10px;
+        }
+        .user-dropdown {
+        position: relative;
+        }
+
+        .user-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .user-dropdown-content a {
+            white-space: nowrap;  /* Ensure that the content doesn't wrap */
+            min-width: 100px;  /* Adjust as needed */
+            display: block;
+            text-align: left;
+            text-decoration: none;
+        }
+
+        .user-dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .user-dropdown:hover .user-dropdown-content {
+            display: block;
+        }
+                .container {
+            width: 30%; /* Adjusted for a better fit on the screen */
+            margin: 50px auto; /* Centered the container and gave it a top margin */
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2); /* Softer shadow */
+            border-radius: 8px;
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            border: none;
+            background-color: #ccc; /* Light grey background */
+            color: #333; /* Darker text color for contrast */
+            padding: 10px 15px; /* Padding to increase the clickable area */
+            margin-bottom: 30px; /* Space before the form starts */
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px; /* Slightly rounded corners */
+        }
+
+        .form-container {
+            width: 100%;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        textarea {
+            height: 100px;
+            resize: none; /* Disabled resizing */
+        }
+
+        .create-button {
+            padding: 10px 20px;
+            background-color: #000; /* Black background */
+            color: white;
+            border: none;
+            border-radius: 0; /* Sharp corners */
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+
+        .create-button:hover {
+            background-color: #555; /* Dark grey background on hover */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%; /* Takes more width on smaller screens */
+                margin-top: 20px; /* Less margin on the top */
+            }
+
+            .back-button {
+                margin-bottom: 20px; /* Less space before the form starts */
+            }
+        }
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            margin-top: -20px; /* Position the counter above the textarea's bottom-right corner */
+            margin-bottom: 20px;
+            color: #666;
+        }
+    </style>
+    <script>
+        function updateCharCount() {
+            var info = document.getElementById('channel-info');
+            var count = document.getElementById('char-count');
+            count.textContent = info.value.length + '/500 characters'; // Update the text content with the length of the textarea value
+        }
+        function validateForm() {
+            var name = document.getElementById('channel-name').value;
+            var info = document.getElementById('channel-info').value;
+            if (name.trim() === '' || info.trim() === '') {
+                alert('Both fields are required.');
+                return false;  // Prevents the form from being submitted
+            }
+            return true;  // Allows the form to be submitted
+        }
+    </script>
+
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">FeedbackMATE</div>
+        <div class="user-info">
+            <span class="welcome-text">Welcome back, {{ username }}</span>
+            <div class="user-dropdown">
+                <img src="{{ user_image }}" alt="User Image" width="40" height="40" style="border-radius: 50%;">
+                <div class="user-dropdown-content">
+                    <a href="{% url 'personal-info' %}">Edit info</a>
+                    <a href="{% url 'logout' %}">Sign out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <button class="back-button" onclick="location.href='{% url 'channel-detail' channel_id=channel.id %}'">Back</button>
+        <div class="form-container">
+            <form onsubmit="return validateForm()" method="POST" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="channel-name">Section title:</label>
+                <input type="text" id="channel-name" name="channel-name" maxlength="70">
+
+                <label for="channel-info">Section info:</label>
+                <textarea id="channel-info" name="channel-info" oninput="updateCharCount()" maxlength="500"></textarea>
+                <div id="char-count" class="char-counter">0/500 characters</div>
+
+                <button type="submit" class="create-button">Create New Channel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize the character count on page load
+        document.addEventListener('DOMContentLoaded', updateCharCount);
+    </script>
+
+</body>
+
+</html>

@@ -34,6 +34,7 @@ urlpatterns = [
     path('teacher/channel/<int:channel_id>/section/<int:section_id>/', views.section, name='section'),
     path('teacher/channel/<int:channel_id>/section/<int:section_id>/edit/', views.edit_section, name='edit-section'),
     path('teacher/create_channel/', views.createChannel, name="create-channel"),
+    path('channel/<int:channel_id>/create-section/', views.createSection, name='create-section'),
     path('delete-channel/<int:channel_id>/', views.delete_channel, name='delete-channel'),
     path('delete-section/<int:section_id>/', views.delete_section, name='delete-section'),
     path('mark-comment-as-read/<int:comment_id>/', views.mark_comment_as_read, name='mark-comment-as-read'),

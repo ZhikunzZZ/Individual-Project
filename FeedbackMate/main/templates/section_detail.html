@@ -187,13 +187,32 @@
 .delete-section-btn {
     background-color: red;
 }
-.edit-info-btn:hover, .delete-section-btn:hover {
-    opacity: 0.7;
+.edit-info-btn:hover {
+    background-color: #373759;
 }
 
+.delete-section-btn:hover {
+    background-color: #cc0000;
+}
+.selected {
+    background-color: #D9D9D9; /* 选中时的背景色 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* 内阴影效果 */
+    border-color: #D9D9D9; /* 悬停时边框颜色 */
+}
 </style>
 
 
+{% endblock %}
+
+{% block section %}
+{% for section in sections %}
+    <div class="section-tooltip">
+        <a href="{% url 'section' channel_id=section.channel.id section_id=section.id %}" class="section-item {% if current_section.id == section.id %}selected{% endif %}">
+            #&nbsp;&nbsp;&nbsp; {{ section.title }}
+        </a>
+        <span class="section-tooltiptext">{{ section.title }}</span>
+    </div>
+{% endfor %}
 {% endblock %}
 
 {% block content %}
