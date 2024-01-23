@@ -11,6 +11,8 @@ from .decorators import unauthenticated_user, teacher_required, student_required
 from .models import Channel, Section, Comment, UserInfo
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from django.db.models import Case, When, Value, IntegerField
 
 
 # Create your views here.
@@ -112,9 +114,21 @@ def section(request, channel_id, section_id):
     current_channel = Channel.objects.get(id=channel_id)
     sections = Section.objects.filter(channel=current_channel)
     current_section = Section.objects.get(id=section_id)
-    comments = Comment.objects.filter(section=current_section)
+
+    sort = request.GET.get('sort', 'read')
+    comments = Comment.objects.filter(section=current_section).annotate(
+        sort_read=Case(
+            When(read=False, then=Value(1)),
+            When(read=True, then=Value(0)),
+            output_field=IntegerField(),
+        )
+    )
+    if sort == 'vote':
+        comments = comments.order_by('-likes', '-sort_read')
+    else:  # 默认按已读状态和点赞数排序，未读和点赞数高的在最上面
+        comments = comments.order_by('-sort_read', '-likes')
     user_info = UserInfo.objects.get(user=request.user)
-    # Render a new template while keeping the layout consistent with 'teacher.html'
+
     return render(request, 'section_detail.html', {
         'username': user_info.profile_name,
         'current_channel': current_channel,
@@ -123,7 +137,23 @@ def section(request, channel_id, section_id):
         'channels': user_channels,
         'comments': comments,
         'user_image': user_info.user_image.url,
+        'sort': sort,
     })
+
+
+def sort_comments(request):
+    sort = request.GET.get('sort', 'read')
+
+    if sort == 'vote':
+        comments = Comment.objects.all().order_by('-likes')
+    else:
+        comments = Comment.objects.all().order_by('-read', '-likes')
+
+    # 使用render_to_string渲染评论列表的HTML
+    html = render_to_string('section_detail.html', {'comments': comments})
+
+    # 返回HTML响应
+    return HttpResponse(html)
 
 def mark_comment_as_read(request, comment_id):
     # 确保请求是POST并且用户已认证

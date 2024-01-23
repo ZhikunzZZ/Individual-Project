@@ -36,5 +36,6 @@ urlpatterns = [
     path('delete-channel/<int:channel_id>/', views.delete_channel, name='delete-channel'),
     path('mark-comment-as-read/<int:comment_id>/', views.mark_comment_as_read, name='mark-comment-as-read'),
     path('update-comment-reply/<int:comment_id>/', views.update_comment_reply, name='update-comment-reply'),
+    path('your-endpoint', views.sort_comments, name='sort_comments'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

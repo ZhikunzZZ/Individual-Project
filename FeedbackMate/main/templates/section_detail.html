@@ -142,7 +142,7 @@
     display: flex;
     background-color: #E0E0FF; /* 或其他您选择的颜色 */
     margin-top: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     border-radius: 5px;
     height: 40px;
     padding: 10px;
@@ -156,7 +156,9 @@
     margin-right: 10px;
     border: 2px solid #f0f0f0;
 }
-
+#sort-form input[type="submit"] {
+    display: none; /* 隐藏提交按钮 */
+}
 
 
 </style>
@@ -178,6 +180,17 @@
     </div>
 
     <div class="comment-section">
+        <form id="sort-form" method="get">
+            <label class="sort-option">
+                <input type="radio" name="sort" value="read" {% if request.GET.sort == "read" or not request.GET.sort %}checked{% endif %}>
+                Sort by read
+            </label>
+            <label class="sort-option">
+                <input type="radio" name="sort" value="vote" {% if request.GET.sort == "vote" %}checked{% endif %}>
+                Sort by vote
+            </label>
+            <input type="submit" value="Sort">
+        </form>
     {% for comment in comments %}
     <div class="comment">
         <img src="{{ comment.user.userinfo.user_image.url }}" alt="User Image" class="user-image">
@@ -207,6 +220,13 @@
 </div>
 
 <script>
+
+    document.querySelectorAll('#sort-form input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            document.getElementById('sort-form').submit();
+        });
+    });
+
     document.querySelectorAll('.mark-as-read-btn').forEach(button => {
         button.addEventListener('click', function() {
             const commentId = this.dataset.commentId;
