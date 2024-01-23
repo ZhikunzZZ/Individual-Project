@@ -88,71 +88,75 @@
     background-color: #D9D9D9;
     border-radius: 20px;
     margin-top: 1px;
-    width: 1155px;
+    width: 955px;
     height: 500px;
     border: 2px solid black;
     overflow-y: auto;
 }
 
+/* 在这里插入CSS样式代码 */
 .comment {
-    width: 600px;
-    padding: 15px;
-    margin: 20px;
-    border: 2px solid black;
     display: flex;
-    flex-direction: column;
+    margin-top:20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    width: 95%;
+    overflow: hidden;
+}
+
+.user-image {
+    border: 2px solid #000000;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 10px;
+}
+
+.comment-main {
+    flex-grow: 1;
+    padding: 10px;
+    background-color: white;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    position: relative;
 }
 
 .comment-actions {
     display: flex;
-    justify-content: flex-end; /* 项目向右对齐 */
-    width: 100%;
-}
-
-.comment-header {
-    display: flex;
     align-items: center;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
 }
 
-.user-image {
-    width: 40px;
+.like-count {
+    margin-right: 10px;
+}
+
+.read-indicator, .mark-as-read-btn, .reply-btn {
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.reply {
+    display: flex;
+    background-color: #E0E0FF; /* 或其他您选择的颜色 */
+    margin-top: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
     height: 40px;
+    padding: 10px;
+    border: 2px solid #000000;
+}
+
+.owner-image {
+    width: 25px;
+    height: 25px;
     border-radius: 50%;
     margin-right: 10px;
-    border: 2px solid black;
+    border: 2px solid #f0f0f0;
 }
 
-.username {
-    font-weight: bold;
-    margin-right: 10px;
-}
-
-.comment-content {
-    margin-top: 5px;
-}
-.read-badge {
-    color: #444791;
-    font-weight: bold;
-}
-
-.likes {
-    display: flex;
-    align-items: center;
-    margin-left: 10px; /* 或根据需要调整间距 */
-}
-
-.fa-thumbs-up {
-    margin-right: 5px;
-}
-
-.reply-button {
-    background: none;
-    border: none;
-    color: #444791;
-    cursor: pointer;
-    padding: 0;
-    margin-right: auto; /* 将回复按钮推向右侧 */
-}
 
 
 </style>
@@ -172,115 +176,124 @@
     <div class="rating-box">
         <img src="{% static 'img/rating.png' %}" alt="Rating" />
     </div>
+
     <div class="comment-section">
     {% for comment in comments %}
-    <div class="comment" {% if comment.read %}style="border-color: #444791;"{% endif %}>
-        <div class="comment-header">
-            <img src="{% static 'img/user.png ' %}" alt="User Image" class="user-image">
-            <span class="username">{{ comment.user.username }}</span>
-        </div>
-        <p class="comment-content">{{ comment.text }}</p>
-        {% if comment.reply %}
-            <div class="reply-content">{{ comment.reply }}</div>
-        {% endif %}
-        <button class="reply-button" data-comment-id="{{ comment.id }}">Reply</button>
-        <div class="reply-box" style="display:none;">
-            <textarea class="reply-text">{{ comment.reply }}</textarea>
-            <button class="submit-reply" data-comment-id="{{ comment.id }}">Submit</button>
-        </div>
-        <div class="comment-actions">
-            {% if comment.read %}
-                <i class="fas fa-eye read-badge"></i>
-            {% else %}
-                <button class="mark-as-read" data-comment-id="{{ comment.id }}">Mark as Read</button>
-            {% endif %}
-            <div class="likes">
-                <i class="fas fa-thumbs-up"></i>
+    <div class="comment">
+        <img src="{{ comment.user.userinfo.user_image.url }}" alt="User Image" class="user-image">
+        <div class="comment-main" {% if comment.read %}style="border-color: #444791;"{% endif %}>
+            <p class="comment-text">{{ comment.text }}</p>
+            <div class="comment-actions">
                 <span class="like-count">{{ comment.likes }}</span>
+                {% if comment.read %}
+                    <i class="fas fa-eye read-indicator"></i>
+                {% else %}
+                    <button class="mark-as-read-btn" data-comment-id="{{ comment.id }}">Mark as Read</button>
+                {% endif %}
+                <i class="fas fa-reply reply-btn" data-comment-id="{{ comment.id }}"></i>
+            </div>
+            <div class="reply" {% if not comment.reply %}style="display:none;"{% endif %}>
+                <img src="{{ comment.section.channel.user.userinfo.user_image.url }}" alt="Owner Image" class="owner-image">
+                <p class="reply-content">{{ comment.reply }}</p>
+            </div>
+            <div class="reply-box" style="display:none;">
+                <textarea class="reply-text">{{ comment.reply }}</textarea>
+                <button class="submit-reply" data-comment-id="{{ comment.id }}">Submit!</button>
             </div>
         </div>
     </div>
     {% endfor %}
     </div>
 </div>
+
 <script>
-document.querySelectorAll('.mark-as-read').forEach(button => {
-    button.addEventListener('click', function() {
-        const commentDiv = this.closest('.comment'); // 获取最近的评论框
-        const commentId = this.dataset.commentId;
-
-        fetch(`/mark-comment-as-read/${commentId}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                commentDiv.style.borderColor = '#444791'; // 改变边框颜色
-                const readBadge = document.createElement('i');
-                readBadge.classList.add('fas', 'fa-eye', 'read-badge');
-                readBadge.classList.add('read-badge'); // 添加一个class以便于样式设定
-                commentDiv.appendChild(readBadge); // 将标志添加到评论框
-
-                this.remove(); // 移除按钮
-            }
+    document.querySelectorAll('.mark-as-read-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const commentId = this.dataset.commentId;
+            const commentDiv = this.closest('.comment-main');
+            // 在这里添加发送标记为已读的请求的代码
+            // 示例代码，根据你的后端逻辑进行调整
+            fetch(`/mark-comment-as-read/${commentId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ read: true })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 创建已读图标
+                    const readIndicator = document.createElement('i');
+                    readIndicator.classList.add('fas', 'fa-check-circle', 'read-indicator');
+                    // 替换标记为已读按钮为已读图标
+                    button.replaceWith(readIndicator);
+                    // 更新边框颜色
+                    commentDiv.style.borderColor = '#444791';
+                }
+            });
         });
     });
-});
 
+    // 为回复按钮添加事件监听器
 
-
-document.querySelectorAll('.reply-button').forEach(button => {
-    button.addEventListener('click', function() {
-        const commentDiv = this.closest('.comment');
-        const replyBox = commentDiv.querySelector('.reply-box');
-        replyBox.style.display = 'block';
-    });
-});
-
-document.querySelectorAll('.submit-reply').forEach(button => {
-    button.addEventListener('click', function() {
-        const commentDiv = this.closest('.comment');
-        const replyText = commentDiv.querySelector('.reply-text').value;
-        console.log("Reply text:", replyText);
-        const commentId = this.dataset.commentId;
-        console.log("id:", commentId);
-        fetch(`/update-comment-reply/${commentId}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ reply: replyText }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Response data:", data);
-            if (data.success) {
-                const replyContentDiv = commentDiv.querySelector('.reply-content');
-                replyContentDiv.textContent = replyText;
-                commentDiv.querySelector('.reply-box').style.display = 'none';
-            }
+    document.querySelectorAll('.reply-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const commentDiv = this.closest('.comment');
+            const replyBox = commentDiv.querySelector('.reply-box');
+            replyBox.style.display = 'block';
         });
     });
-});
+    // 提交回复的函数
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+    document.querySelectorAll('.submit-reply').forEach(button => {
+        button.addEventListener('click', function() {
+            const commentDiv = this.closest('.comment');
+            const replyText = commentDiv.querySelector('.reply-text').value;
+            console.log("Reply text:", replyText);
+            const commentId = this.dataset.commentId;
+            console.log("id:", commentId);
+            fetch(`/update-comment-reply/${commentId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ reply: replyText }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Response data:", data);
+                if (data.success) {
+                    const replyContentDiv = commentDiv.querySelector('.reply-content');
+                    const replyDiv = commentDiv.querySelector('.reply');
+                    replyContentDiv.textContent = replyText;
+                    if (replyText.trim() != '') {
+                        replyDiv.style.display = ''; // 如果有回复内容，显示回复容器
+                    }else {
+                        replyDiv.style.display = 'none';
+                    }
+                    commentDiv.querySelector('.reply-box').style.display = 'none';
+                }
+            });
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
 
 </script>
 

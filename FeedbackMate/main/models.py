@@ -59,4 +59,4 @@ class Comment(models.Model):
     likes = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"Comment by {self.user.username} on {self.section.title}"
+        return self.text
