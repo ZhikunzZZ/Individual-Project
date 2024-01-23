@@ -11,8 +11,9 @@ from .decorators import unauthenticated_user, teacher_required, student_required
 from .models import Channel, Section, Comment, UserInfo
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
-from django.template.loader import render_to_string
 from django.db.models import Case, When, Value, IntegerField
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
 # Create your views here.
@@ -140,23 +141,32 @@ def section(request, channel_id, section_id):
         'sort': sort,
     })
 
+def edit_section(request, channel_id, section_id):
+    channel = get_object_or_404(Channel, pk=channel_id)
+    section = get_object_or_404(Section, pk=section_id, channel=channel)
+    if request.method == 'POST':
+        section_title = request.POST.get('section_title')
+        section_description = request.POST.get('section_description')
 
-def sort_comments(request):
-    sort = request.GET.get('sort', 'read')
+        if section_title:
+            section.title = section_title
+        if section_description:
+            section.description = section_description
+        section.save()
+        return redirect('section', channel_id=channel_id, section_id=section_id)
 
-    if sort == 'vote':
-        comments = Comment.objects.all().order_by('-likes')
-    else:
-        comments = Comment.objects.all().order_by('-read', '-likes')
+    return render(request, 'edit_section_info.html', {
+        'section': section,
+        'channel': channel,
+    })
 
-    # 使用render_to_string渲染评论列表的HTML
-    html = render_to_string('section_detail.html', {'comments': comments})
-
-    # 返回HTML响应
-    return HttpResponse(html)
+def delete_section(request, section_id):
+    section = get_object_or_404(Section, id=section_id, channel__user=request.user)
+    channel_id = section.channel.id  # Capture the channel id to redirect after deletion
+    section.delete()
+    return HttpResponseRedirect(reverse('channel-detail', args=[channel_id]))
 
 def mark_comment_as_read(request, comment_id):
-    # 确保请求是POST并且用户已认证
     if request.method == "POST" and request.user.is_authenticated:
         comment = Comment.objects.get(id=comment_id)
         comment.read = True
