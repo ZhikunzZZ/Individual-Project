@@ -70,7 +70,7 @@
     background-color: #D9D9D9;
     border-radius: 20px;
     margin-top: 20px;
-    width: 500px;
+    width: 400px;
     height: 200px;
     border: 2px solid black;
     float: right;
@@ -88,7 +88,7 @@
     background-color: #D9D9D9;
     border-radius: 20px;
     margin-top: 1px;
-    width: 955px;
+    width: 755px;
     height: 500px;
     border: 2px solid black;
     overflow-y: auto;
@@ -121,6 +121,20 @@
     position: relative;
 }
 
+.comment-username {
+    font-weight: bold; /* 加粗用户名 */
+    margin-top: 1px;
+    margin-bottom: 5px; /* 在用户名和评论文本之间添加一些间隔 */
+    /* 添加其他样式来适应您的设计 */
+}
+
+.comment-text {
+    white-space: normal; /* 允许文本在需要时换行 */
+    word-wrap: break-word; /* 在单词太长而无法在一行中显示时，允许它断开到下一行 */
+    overflow-wrap: break-word; /* 同上，确保文本不会溢出容器 */
+    margin-bottom: 30px;
+}
+
 .comment-actions {
     display: flex;
     align-items: center;
@@ -148,8 +162,8 @@
 
 .reply {
     display: flex;
-    background-color: #E0E0FF; /* 或其他您选择的颜色 */
-    margin-top: 10px;
+    background-color: #E0E0FF;
+    margin-top: -20px;
     margin-bottom: 25px;
     border-radius: 5px;
     height: 40px;
@@ -252,6 +266,7 @@
     <div class="comment">
         <img src="{{ comment.user.userinfo.user_image.url }}" alt="User Image" class="user-image">
         <div class="comment-main" {% if comment.read %}style="border-color: #444791;"{% endif %}>
+            <p class="comment-username">{{ comment.user.username }}</p>
             <p class="comment-text">{{ comment.text }}</p>
             <div class="comment-actions">
                 <div class="likes">
