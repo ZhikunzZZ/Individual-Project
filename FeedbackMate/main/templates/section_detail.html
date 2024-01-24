@@ -70,7 +70,7 @@
     background-color: #D9D9D9;
     border-radius: 20px;
     margin-top: 20px;
-    width: 400px;
+    width: 510px;
     height: 200px;
     border: 2px solid black;
     float: right;
@@ -213,6 +213,67 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* 内阴影效果 */
     border-color: #D9D9D9; /* 悬停时边框颜色 */
 }
+.keyword-box {
+    display: block;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-left: 30px;
+    background-color: #D9D9D9;
+    border-radius: 20px;
+    margin-top: 1px;
+    width: 355px;
+    height: 500px;
+    border: 2px solid black;
+    overflow-y: auto;
+}
+
+
+
+/* 搜索和排序的包裹容器 */
+.search-sort-container {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    padding: 10px;
+    margin-left: 10px;
+}
+
+/* 调整排序表单的样式 */
+#sort-form {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    margin-right: 5px;
+}
+
+/* 调整搜索表单的样式 */
+.search-form {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+}
+
+.search-form input[type="text"] {
+    padding: 5px 10px;
+    font-size: 14px; /* 字体大小调小 */
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    width: 200px; /* 调整输入框宽度 */
+    margin-right: 10px; /* 输入框和按钮之间的空间 */
+}
+
+.search-form button {
+    padding: 5px 10px;
+    font-size: 14px; /* 字体大小调小 */
+    background-color: #444791;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 80px; /* 调整按钮宽度 */
+    text-align: center;
+}
+
+.search-form button:hover {
+    background-color: #373759; /* 按钮悬停时颜色稍微变深 */
+}
 </style>
 
 
@@ -251,6 +312,7 @@
     </div>
 
     <div class="comment-section">
+        <div class="search-sort-container">
         <form id="sort-form" method="get">
             <label class="sort-option">
                 <input type="radio" name="sort" value="read" {% if request.GET.sort == "read" or not request.GET.sort %}checked{% endif %}>
@@ -260,8 +322,16 @@
                 <input type="radio" name="sort" value="vote" {% if request.GET.sort == "vote" %}checked{% endif %}>
                 Sort by vote
             </label>
+            <input type="hidden" name="search" value="{{ request.GET.search|default:'' }}">
             <input type="submit" value="Sort">
         </form>
+        <form method="get" action="" class="search-form">
+            <input type="text" name="search" placeholder="Search comments..." value="{{ request.GET.search|default:'' }}">
+            <!-- 保存排序参数的隐藏字段 -->
+            <input type="hidden" name="sort" value="{{ request.GET.sort|default:'read' }}">
+            <button type="submit">Search</button>
+        </form>
+        </div>
     {% for comment in comments %}
     <div class="comment">
         <img src="{{ comment.user.userinfo.user_image.url }}" alt="User Image" class="user-image">
@@ -286,11 +356,14 @@
             </div>
             <div class="reply-box" style="display:none;">
                 <textarea class="reply-text">{{ comment.reply }}</textarea>
-                <button class="submit-reply" data-comment-id="{{ comment.id }}">Submit!</button>
+                <button class="submit-reply" data-comment-id="{{ comment.id }}">Submit</button>
             </div>
         </div>
     </div>
     {% endfor %}
+    </div>
+    <div class="keyword-box">
+
     </div>
 </div>
 
@@ -315,8 +388,6 @@
         button.addEventListener('click', function() {
             const commentId = this.dataset.commentId;
             const commentDiv = this.closest('.comment-main');
-            // 在这里添加发送标记为已读的请求的代码
-            // 示例代码，根据你的后端逻辑进行调整
             fetch(`/mark-comment-as-read/${commentId}/`, {
                 method: 'POST',
                 headers: {

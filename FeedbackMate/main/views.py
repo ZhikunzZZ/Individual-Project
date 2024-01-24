@@ -11,7 +11,7 @@ from .decorators import unauthenticated_user, teacher_required, student_required
 from .models import Channel, Section, Comment, UserInfo
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
-from django.db.models import Case, When, Value, IntegerField
+from django.db.models import Q, Case, When, Value, IntegerField
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
@@ -124,24 +124,34 @@ def delete_channel(request, channel_id):
         print(str(e))
         return JsonResponse({'error': 'Internal Server Error'}, status=500)
 
+
 def section(request, channel_id, section_id):
     user_channels = Channel.objects.filter(user=request.user)
     current_channel = Channel.objects.get(id=channel_id)
     sections = Section.objects.filter(channel=current_channel)
     current_section = Section.objects.get(id=section_id)
 
-    sort = request.GET.get('sort', 'read')
-    comments = Comment.objects.filter(section=current_section).annotate(
+    search_query = request.GET.get('search', '')
+
+    comments_query = Comment.objects.filter(section=current_section)
+    if search_query:
+        comments_query = comments_query.filter(text__icontains=search_query)
+
+    # 总是注释 sort_read
+    comments_query = comments_query.annotate(
         sort_read=Case(
             When(read=False, then=Value(1)),
             When(read=True, then=Value(0)),
             output_field=IntegerField(),
         )
     )
+
+    sort = request.GET.get('sort', 'read')
     if sort == 'vote':
-        comments = comments.order_by('-likes', '-sort_read')
-    else:  # 默认按已读状态和点赞数排序，未读和点赞数高的在最上面
-        comments = comments.order_by('-sort_read', '-likes')
+        comments = comments_query.order_by('-likes', '-sort_read')
+    else:
+        comments = comments_query.order_by('-sort_read', '-likes')
+
     user_info = UserInfo.objects.get(user=request.user)
 
     return render(request, 'section_detail.html', {
@@ -153,6 +163,7 @@ def section(request, channel_id, section_id):
         'comments': comments,
         'user_image': user_info.user_image.url,
         'sort': sort,
+        'search_query': search_query,
     })
 
 def edit_section(request, channel_id, section_id):
