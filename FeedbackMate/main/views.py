@@ -14,6 +14,11 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q, Case, When, Value, IntegerField
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from collections import defaultdict
+import re
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk import pos_tag
 
 
 # Create your views here.
@@ -131,8 +136,25 @@ def section(request, channel_id, section_id):
     sections = Section.objects.filter(channel=current_channel)
     current_section = Section.objects.get(id=section_id)
 
-    search_query = request.GET.get('search', '')
+    comments = Comment.objects.filter(section=current_section)
+    common_words = set(stopwords.words('english'))
+    keyword_freq = defaultdict(int)
 
+    for comment in comments:
+        text = comment.text.lower()
+        likes = comment.likes
+        text = re.sub(r'[^\w\s]', '', text)
+        words = word_tokenize(text)
+        tagged_words = pos_tag(words)
+
+        for word, tag in tagged_words:
+            if word not in common_words and (tag == 'NN' or tag == 'JJ'):
+                keyword_freq[word] += likes
+
+    sorted_keywords = sorted(keyword_freq.items(), key=lambda item: item[1], reverse=True)
+    top_keywords = sorted_keywords[:10]
+
+    search_query = request.GET.get('search', '')
     comments_query = Comment.objects.filter(section=current_section)
     if search_query:
         comments_query = comments_query.filter(text__icontains=search_query)
@@ -164,6 +186,7 @@ def section(request, channel_id, section_id):
         'user_image': user_info.user_image.url,
         'sort': sort,
         'search_query': search_query,
+        'top_keywords': top_keywords,
     })
 
 def edit_section(request, channel_id, section_id):
