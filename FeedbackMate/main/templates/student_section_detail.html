@@ -614,6 +614,35 @@
         }
         return cookieValue;
     }
+
+    function rateSection(star, sectionId, rating) {
+        var currentRating = rating;
+
+        fetch('/rate_section/', {  // 使用你的实际URL
+            method: 'POST',
+            body: JSON.stringify({'section_id': sectionId, 'rating': currentRating}),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            updateRatingDisplay(data);
+        });
+    }
+
+    function updateRatingDisplay(data) {
+        // 更新总评分
+        document.getElementById('total-rating').textContent = data.total_rating;
+        document.getElementById('participants-count').textContent = data.ratings_count;
+
+        // 更新各星级评分和百分比
+        for (let i = 1; i <= 5; i++) {
+            document.getElementById(`star-${i}-count`).textContent = data[`${i}_star_percentage`];
+            document.querySelector(`.left-bar-${i}`).style.width = data[`${i}_star_percentage`] + '%';
+        }
+    }
 </script>
 
 

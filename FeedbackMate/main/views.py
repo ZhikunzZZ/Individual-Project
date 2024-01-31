@@ -359,6 +359,67 @@ def submit_feedback(request, section_id):
     return redirect('student-section', channel_id=section.channel.id, section_id=section_id)
 
 
+def rate_section(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        section_id = data['section_id']
+        rating = int(data['rating'])
+        user = request.user  # 获取当前登录的用户
+
+        section = Section.objects.get(id=section_id)
+
+        # 从所有评分列表中移除用户
+        section.one_star_users.remove(user)
+        section.two_star_users.remove(user)
+        section.three_star_users.remove(user)
+        section.four_star_users.remove(user)
+        section.five_star_users.remove(user)
+
+        # 根据评分将用户添加到相应列表
+        if rating == 1:
+            section.one_star_users.add(user)
+        elif rating == 2:
+            section.two_star_users.add(user)
+        elif rating == 3:
+            section.three_star_users.add(user)
+        elif rating == 4:
+            section.four_star_users.add(user)
+        elif rating == 5:
+            section.five_star_users.add(user)
+
+        # 重新计算各星级用户的数量和百分比
+        total_users = section.one_star_users.count() + section.two_star_users.count() + \
+                      section.three_star_users.count() + section.four_star_users.count() + \
+                      section.five_star_users.count()
+
+        section.ratings_count = total_users
+        section.total_rating = round(sum([2 * section.one_star_users.count(),
+                                    4 * section.two_star_users.count(),
+                                    6 * section.three_star_users.count(),
+                                    8 * section.four_star_users.count(),
+                                    10 * section.five_star_users.count()]) / total_users if total_users > 0 else 0)
+
+        section.one_star_percentage = (section.one_star_users.count() / total_users * 100) if total_users > 0 else 0
+        section.two_star_percentage = (section.two_star_users.count() / total_users * 100) if total_users > 0 else 0
+        section.three_star_percentage = (section.three_star_users.count() / total_users * 100) if total_users > 0 else 0
+        section.four_star_percentage = (section.four_star_users.count() / total_users * 100) if total_users > 0 else 0
+        section.five_star_percentage = (section.five_star_users.count() / total_users * 100) if total_users > 0 else 0
+
+        section.save()
+
+        # 返回更新后的数据
+        return JsonResponse({
+            'total_rating': section.total_rating,
+            'ratings_count': section.ratings_count,
+            '1_star_percentage': section.one_star_percentage,
+            '2_star_percentage': section.two_star_percentage,
+            '3_star_percentage': section.three_star_percentage,
+            '4_star_percentage': section.four_star_percentage,
+            '5_star_percentage': section.five_star_percentage
+        })
+
+
+
 def mark_comment_as_read(request, comment_id):
     if request.method == "POST" and request.user.is_authenticated:
         comment = Comment.objects.get(id=comment_id)

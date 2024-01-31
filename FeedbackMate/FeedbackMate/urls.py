@@ -45,5 +45,6 @@ urlpatterns = [
     path('mark-comment-as-read/<int:comment_id>/', views.mark_comment_as_read, name='mark-comment-as-read'),
     path('update-comment-reply/<int:comment_id>/', views.update_comment_reply, name='update-comment-reply'),
     path('toggle_like/', views.toggle_like, name='toggle_like'),
+    path('rate_section/', views.rate_section, name='rate_section'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
