@@ -62,23 +62,6 @@
     padding: 15px;
 }
 
-.rating-box {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    margin-left: 30px;
-    background-color: #D9D9D9;
-    border-radius: 20px;
-    margin-top: 20px;
-    width: 510px;
-    height: 200px;
-    border: 2px solid black;
-    float: right;
-}
-
-.rating-box img {
-    border-radius: 20px;
-}
 
 .comment-section {
     display: block;
@@ -192,37 +175,6 @@
     display: none; /* 隐藏提交按钮 */
 }
 
-.edit-info-btn, .delete-section-btn {
-    display: block; /* 或者使用 inline-block，视需要而定 */
-    width: auto; /* 按钮宽度，可以根据需要设置为特定值或百分比 */
-    min-width: 112px;
-    padding: 5px 10px; /* 按钮内边距 */
-    margin-top: 7px; /* 上外边距，根据需要调整 */
-    margin-left: 8px;
-    background-color: #444791; /* 按钮背景颜色 */
-    color: white; /* 文本颜色 */
-    text-align: center; /* 文本居中 */
-    border: none; /* 无边框 */
-    border-radius: 3px; /* 圆角 */
-    cursor: pointer; /* 鼠标样式 */
-    font-weight: bold; /* 字体加粗 */
-    /* 其他样式... */
-}
-.delete-section-btn {
-    background-color: red;
-}
-.edit-info-btn:hover {
-    background-color: #373759;
-}
-
-.delete-section-btn:hover {
-    background-color: #cc0000;
-}
-.selected {
-    background-color: #D9D9D9; /* 选中时的背景色 */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* 内阴影效果 */
-    border-color: #D9D9D9; /* 悬停时边框颜色 */
-}
 /* 搜索和排序的包裹容器 */
 .search-sort-container {
     display: flex;
@@ -326,6 +278,126 @@
     background-color: #373759;
 }
 
+
+
+.rating-box {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-left: 30px;
+    background-color: #D9D9D9;
+    border-radius: 20px;
+    margin-top: 20px;
+    width: 520px;
+    height: 200px;
+    border: 2px solid black;
+    float: right;
+    overflow: hidden;
+}
+
+.rating-overview{
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.circle-rating {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid black;
+    background-color: #59599B;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+}
+#total-rating {
+    color: white;
+}
+.rating-participants{
+    text-align: center;
+}
+
+
+.right-part {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.rating-statistics {
+    display: flex;
+    flex-direction: column;
+    background: #f0f0f0;
+    padding: 5px;
+    border-radius: 10px;
+    width: 340px;
+}
+
+.rating-stat {
+    display: flex;
+    align-items: center;
+    margin-bottom: 3px; /* 添加一些间距 */
+    margin-top: 3px;
+    justify-content: flex-end;
+}
+
+.rating-stat .fas.fa-star {
+    color: #FFD700; /* 星星的颜色 */
+    margin-right: 2px;
+}
+
+.rating-bar {
+    height: 10px; /* 长条的高度 */
+    width:200px;
+    background-color: #BCBCBF; /* 长条的背景颜色 */
+    margin-left: 5px; /* 与星星的间距 */
+    border-radius: 5px; /* 圆角 */
+}
+
+.left-bar-1, .left-bar-2, .left-bar-3,.left-bar-4,.left-bar-5 {
+    height: 100%;
+    background-color: #59599B;
+    border-radius: 5px;
+}
+.left-bar-1 {
+    width: {{ current_section.one_star_percentage }}%;
+}
+.left-bar-2 {
+    width: {{ current_section.two_star_percentage }}%;
+}
+.left-bar-3 {
+    width: {{ current_section.three_star_percentage }}%;
+}
+.left-bar-4 {
+    width: {{ current_section.four_star_percentage }}%;
+}
+.left-bar-5 {
+    width: {{ current_section.five_star_percentage }}%;
+}
+.rating-heading h3 {
+    font-size: 1.2em; /* 调整大小 */
+    color: #000000; /* 调整颜色，这里用了之前用于按钮的颜色 */
+    margin-bottom: 5px; /* 下方间距 */
+    margin-top: 5px;
+}
+.rating-buttons {
+    margin-left: 20px;
+    text-align: right;
+}
+.rating-buttons .fa-star {
+    font-size: 1.5em; /* 投票星星的大小 */
+    margin-right: 10px; /* 星星之间的间距 */
+    cursor: pointer; /* 鼠标悬停时的手型 */
+}
+
+.rating-buttons .fa-star:hover {
+    color: #FFD700; /* 悬停时的颜色，金色 */
+}
+.percentage-count {
+    margin-left: 2px;
+    width: 30px;
+    font-size: 0.5em;
+}
 </style>
 
 
@@ -356,9 +428,86 @@
         </div>
     </div>
     <div class="rating-box">
-        <img src="{% static 'img/rating.png' %}" alt="Rating" />
-    </div>
+        <div class="rating-overview">
+            <div class="circle-rating">
+                <span id="total-rating">{{ current_section.total_rating}}</span>
+            </div>
+            <div class="rating-participants">
+                <span id="participants-count">{{ current_section.ratings_count}}</span> participants
+            </div>
+        </div>
+        <div class="right-part">
+            <div class="rating-statistics">
+                <div class="rating-stat" data-star="5">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <div class="rating-bar">
+                        <div class="left-bar-5"></div>
+                    </div>
+                    <div class="percentage-count">
+                        <span id="star-5-count">{{ current_section.five_star_percentage }}</span>
+                    </div>
 
+                </div>
+                <div class="rating-stat" data-star="4">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <div class="rating-bar">
+                        <div class="left-bar-4"></div>
+                    </div>
+                    <div class="percentage-count">
+                        <span id="star-4-count">{{ current_section.four_star_percentage }}</span>
+                    </div>
+
+                </div>
+                <div class="rating-stat" data-star="3">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <div class="rating-bar">
+                        <div class="left-bar-3"></div>
+                    </div>
+                    <div class="percentage-count">
+                        <span id="star-3-count">{{ current_section.three_star_percentage }}</span>
+                    </div>
+
+                </div>
+                <div class="rating-stat" data-star="2">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <div class="rating-bar">
+                        <div class="left-bar-2"></div>
+                    </div>
+                    <div class="percentage-count">
+                        <span id="star-2-count">{{ current_section.two_star_percentage }}</span>
+                    </div>
+
+                </div>
+                <div class="rating-stat" data-star="1">
+                    <i class="fas fa-star"></i>
+                    <div class="rating-bar">
+                        <div class="left-bar-1"></div>
+                    </div>
+                    <div class="percentage-count">
+                        <span id="star-1-count">{{ current_section.one_star_percentage }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="rating-heading">
+                <h3>Rating for #{{ current_section.title }}:</h3>
+            </div>
+            <div class="rating-buttons" data-current-rating="0">
+                {% for star in "12345" %}
+                <i class="far fa-star rating-star" data-rating="{{ forloop.counter }}" onclick="rateSection(this, {{ current_section.id }}, '{{ forloop.counter }}')"></i>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
     <div class="comment-section">
         <div class="search-sort-container">
         <form id="sort-form" method="get">

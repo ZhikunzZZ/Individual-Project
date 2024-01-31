@@ -46,6 +46,18 @@ class Section(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     description = models.TextField(max_length=500, blank=True)
+    total_rating = models.FloatField(default=0.0, blank=True)
+    ratings_count = models.PositiveIntegerField(default=0, blank=True)
+    one_star_users = models.ManyToManyField(User, related_name='one_star_sections', blank=True)
+    two_star_users = models.ManyToManyField(User, related_name='two_star_sections', blank=True)
+    three_star_users = models.ManyToManyField(User, related_name='three_star_sections', blank=True)
+    four_star_users = models.ManyToManyField(User, related_name='four_star_sections', blank=True)
+    five_star_users = models.ManyToManyField(User, related_name='five_star_sections', blank=True)
+    one_star_percentage = models.FloatField(verbose_name="Percentage", default=0.0)
+    two_star_percentage = models.FloatField(verbose_name="Percentage", default=0.0)
+    three_star_percentage = models.FloatField(verbose_name="Percentage", default=0.0)
+    four_star_percentage = models.FloatField(verbose_name="Percentage", default=0.0)
+    five_star_percentage = models.FloatField(verbose_name="Percentage", default=0.0)
 
     def __str__(self):
         return self.title
@@ -57,6 +69,7 @@ class Comment(models.Model):
     text = models.TextField(max_length=500)  # 评论内容
     read = models.BooleanField(default=False)
     reply = models.TextField(blank=True, null=True)
+    is_anonymous = models.BooleanField(default=False)
     liked_users = models.ManyToManyField(User, related_name='liked_comments', blank=True)
     likes = models.IntegerField(default=0)
 
