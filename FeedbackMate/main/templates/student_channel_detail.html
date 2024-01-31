@@ -1,4 +1,4 @@
-{% extends 'teacher.html' %}
+{% extends 'student.html' %}
 {% load static %}
 {% block styles %}
 {{ block.super }}
@@ -120,7 +120,7 @@
 {% block channel %}
     {% for channel in channels %}
     <div class="channel-icon-container {% if channel.id == current_channel.id %}selected-channel{% endif %}" data-channel-id="{{ channel.id }}">
-        <img src="{{ channel.image.url }}" alt="" class="channel-icon {% if channel.id == current_channel.id %}selected-channel-icon{% endif %}" onclick="location.href='{% url 'channel-detail' channel.id %}'">
+        <img src="{{ channel.image.url }}" alt="" class="channel-icon {% if channel.id == current_channel.id %}selected-channel-icon{% endif %}" onclick="location.href='{% url 'student-channel-detail' channel.id %}'">
         <span class="tooltip">{{ channel.name }}</span>
     </div>
     {% endfor %}
@@ -129,12 +129,12 @@
 <div class="section-nav">
     <div class="pin-code-display">
         Pin code: {{ current_channel.pin_code }}
-        <button onclick="location.href='{% url 'create-section' current_channel.id %}'" class="create-section-btn">Create Section</button>
+        <button type="button" onclick="confirmExit({{ current_channel.id }})" class="create-section-btn">Exit Channel</button>
     </div>
     {% block section %}
     {% for section in sections %}
       <div class="section-tooltip">
-        <a href="{% url 'section' channel_id=section.channel.id section_id=section.id %}" class="section-item">
+        <a href="{% url 'student-section' channel_id=section.channel.id section_id=section.id %}" class="section-item">
           #&nbsp;&nbsp;&nbsp; {{ section.title }}
         </a>
         <span class="section-tooltiptext">{{ section.title }}</span>
@@ -143,4 +143,15 @@
     {% endblock%}
 </div>
 
+<script>
+    function confirmExit(channelId) {
+        var confirmAction = confirm("Are you sure you want to exit this channel? This action cannot be undone.");
+        if (confirmAction) {
+            // User pressed OK, proceed with the deletion
+            window.location.href = `/student/exit-channel/${channelId}/`; // Update with your actual URL pattern
+        } else {
+            // User pressed Cancel, do nothing
+        }
+    }
+</script>
 {% endblock %}

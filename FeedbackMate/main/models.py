@@ -33,10 +33,11 @@ class UserInfo(models.Model):
 
 class Channel(models.Model):
     name = models.CharField(max_length=70)
+    pin_code = models.CharField(max_length=6, unique=True, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField(max_length=500, blank=True)
     image = models.ImageField(upload_to=channel_image_path, default='img/channel_icon.jpg')
-
+    students = models.ManyToManyField(User, related_name='joined_channels', blank=True)
     def __str__(self):
         return self.name
 
@@ -56,7 +57,10 @@ class Comment(models.Model):
     text = models.TextField(max_length=500)  # 评论内容
     read = models.BooleanField(default=False)
     reply = models.TextField(blank=True, null=True)
+    liked_users = models.ManyToManyField(User, related_name='liked_comments', blank=True)
     likes = models.IntegerField(default=0)
 
     def __str__(self):
         return self.text
+
+

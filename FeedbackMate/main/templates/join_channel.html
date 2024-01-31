@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Main Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #59599B, white);
+            height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #444791;
+            color: white;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .welcome-text {
+            margin-right: 10px;
+        }
+        .user-dropdown {
+        position: relative;
+        }
+
+        .user-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .user-dropdown-content a {
+            white-space: nowrap;  /* Ensure that the content doesn't wrap */
+            min-width: 100px;  /* Adjust as needed */
+            display: block;
+            text-align: left;
+            text-decoration: none;
+        }
+
+        .user-dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .user-dropdown:hover .user-dropdown-content {
+            display: block;
+        }
+        .container {
+            width: 600px; /* Adjusted for a better fit on the screen */
+            height: 500px;
+            margin: 50px auto; /* Centered the container and gave it a top margin */
+            border: 1px solid black; /* 添加黑色边框 */
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2); /* Softer shadow */
+            border-radius: 8px;
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+
+
+        .title-container {
+            text-align: center; /* 居中标题和提示文本 */
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
+        .title {
+            font-family: 'Roboto', sans-serif;
+            font-size: 3em;
+            margin: 0.5em 0;
+            word-spacing: 0.4em;
+        }
+        .centered-text {
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 60px;
+            max-width: 53%;
+            text-align: center;
+            color: #636363;
+            font-size: 0.9em;
+        }
+
+
+        .pin-code-container {
+            display: flex;
+            justify-content: center; /* Center the input boxes horizontally */
+            margin-bottom: 40px; /* Space below the input boxes */
+        }
+
+        .pin-code-form {
+            display: flex;
+            justify-content: center; /* Centered the form */
+            flex-wrap: wrap; /* Wrap items if needed */
+            max-width: 350px; /* Set a max-width for the form */
+            margin: 0 auto; /* Center the form in the container */
+        }
+
+        .pin-code-input {
+            padding: 10px;
+            width: 45px;
+            height: 45px;
+            border: 1px solid black;
+            line-height: 40px;
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin-right: 5px;
+        }
+
+        .back-button {
+            display: inline-block; /* Changed from 'none' to 'inline-block' */
+            background-color: #59599B; /* Dark purple background, same as the header */
+            color: white; /* White text */
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none; /* No underline */
+            border-radius: 4px; /* Slightly rounded corners */
+            border: none; /* No border */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+
+        .back-button:hover {
+            background-color: #484875; /* Slightly darker purple for hover effect */
+        }
+
+        .pin-code-submit {
+            background-color: transparent;
+            border: 2px solid black;
+            border-radius: 20px;
+            color: black;
+            font-weight: bold;
+            font-size: 1.5em;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .pin-code-submit:hover {
+            background-color: #f0f0f0;
+            border-color: #808080;
+        }
+
+        .messages {
+            list-style-type: none; /* Remove bullets from list */
+            padding: 0; /* Remove padding */
+            margin: 40px 0; /* Add some margin above and below */
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .messages li {
+            background-color: #f2dede; /* Light red background */
+            border: 1px solid #ebccd1; /* Red border */
+            border-radius: 4px; /* Slightly rounded corners */
+            padding: 10px; /* Add some padding */
+            margin-bottom: 5px; /* Add some margin between messages */
+        }
+
+    </style>
+    <script>
+        function updateCharCount() {
+            var info = document.getElementById('channel-info');
+            var count = document.getElementById('char-count');
+            count.textContent = info.value.length + '/500 characters'; // Update the text content with the length of the textarea value
+        }
+        function validateForm() {
+            var name = document.getElementById('channel-name').value;
+            var info = document.getElementById('channel-info').value;
+            if (name.trim() === '' || info.trim() === '') {
+                alert('Both fields are required.');
+                return false;  // Prevents the form from being submitted
+            }
+            return true;  // Allows the form to be submitted
+        }
+
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const pinInputs = document.querySelectorAll('.pin-code-input');
+
+            pinInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    if(value.match(/[A-Za-z0-9]/)) {
+                        e.target.value = value.slice(-1);
+                        if(index < pinInputs.length - 1) {
+                            pinInputs[index + 1].focus();
+                        }
+                    } else {
+                        e.target.value = '';
+                    }
+                });
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">FeedbackMATE</div>
+        <div class="user-info">
+            <span class="welcome-text">Welcome back, {{ username }}</span>
+            <div class="user-dropdown">
+                <img src="{{ user_image }}" alt="User Image" width="40" height="40" style="border-radius: 50%;">
+                <div class="user-dropdown-content">
+                    <a href="{% url 'personal-info' %}">Edit info</a>
+                    <a href="{% url 'logout' %}">Sign out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+    <button onclick="location.href='{% url 'student' %}'" class="back-button">Back</button>
+    <div class="title-container">
+        <h1 class="title">JOIN A CHANNEL</h1>
+        <p class="centered-text">Please use the pin code to join the channel, the pin code is usually provided by the teacher.</p>
+    </div>
+    <form class="pin-code-form" action=" " method="post">
+        {% csrf_token %}
+        <div class="pin-code-container">
+            {% for _ in pin_code %}
+                <input type="text" maxlength="1" pattern="[A-Za-z0-9]" required class="pin-code-input" name="pin_code[]">
+            {% endfor %}
+        </div>
+        <input type="submit" value="Enter a pin code" class="pin-code-submit">
+    </form>
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    </div>
+
+    <script>
+        // Initialize the character count on page load
+        document.addEventListener('DOMContentLoaded', updateCharCount);
+    </script>
+
+</body>
+
+</html>
