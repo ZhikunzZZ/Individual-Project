@@ -11,7 +11,7 @@ from .decorators import unauthenticated_user, teacher_required, student_required
 from .models import Channel, Section, Comment, UserInfo
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
-from django.db.models import Q, Case, When, Value, IntegerField
+from django.db.models import Q, Case, When, Value, IntegerField, F
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from collections import defaultdict
@@ -254,19 +254,18 @@ def studentSection(request, channel_id, section_id):
         comments_query = comments_query.filter(text__icontains=search_query)
 
     # 总是注释 sort_read
+    sort = request.GET.get('sort', 'user_first')
     comments_query = comments_query.annotate(
-        sort_read=Case(
-            When(read=False, then=Value(1)),
-            When(read=True, then=Value(0)),
-            output_field=IntegerField(),
+        current_user_comment=Case(
+            When(user=request.user, then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField()
         )
     )
-
-    sort = request.GET.get('sort', 'read')
-    if sort == 'vote':
-        comments = comments_query.order_by('-likes', '-sort_read')
+    if sort == 'user_first':
+        comments = comments_query.order_by('-current_user_comment', '-likes')
     else:
-        comments = comments_query.order_by('-sort_read', '-likes')
+        comments = comments_query.order_by('-likes', '-current_user_comment')
 
     user_info = UserInfo.objects.get(user=request.user)
 
@@ -438,6 +437,13 @@ def rate_section(request):
 
         })
 
+
+def delete_comment(request, comment_id):
+    if request.method == 'POST':
+        comment = get_object_or_404(Comment, pk=comment_id, user=request.user)  # Ensures the user can only delete their own comments
+        comment.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False}, status=400)
 
 
 def mark_comment_as_read(request, comment_id):

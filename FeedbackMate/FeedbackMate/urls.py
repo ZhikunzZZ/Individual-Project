@@ -46,5 +46,6 @@ urlpatterns = [
     path('update-comment-reply/<int:comment_id>/', views.update_comment_reply, name='update-comment-reply'),
     path('toggle_like/', views.toggle_like, name='toggle_like'),
     path('rate_section/', views.rate_section, name='rate_section'),
+    path('delete_comment/<int:comment_id>/', views.delete_comment, name='delete_comment'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
