@@ -270,6 +270,20 @@ def studentSection(request, channel_id, section_id):
 
     user_info = UserInfo.objects.get(user=request.user)
 
+
+
+    user_rating = 0
+    if current_section.one_star_users.filter(id=request.user.id).exists():
+        user_rating = 1
+    elif current_section.two_star_users.filter(id=request.user.id).exists():
+        user_rating = 2
+    elif current_section.three_star_users.filter(id=request.user.id).exists():
+        user_rating = 3
+    elif current_section.four_star_users.filter(id=request.user.id).exists():
+        user_rating = 4
+    elif current_section.five_star_users.filter(id=request.user.id).exists():
+        user_rating = 5
+
     return render(request, 'student_section_detail.html', {
         'username': user_info.profile_name,
         'current_channel': current_channel,
@@ -280,6 +294,7 @@ def studentSection(request, channel_id, section_id):
         'user_image': user_info.user_image.url,
         'sort': sort,
         'search_query': search_query,
+        'user_rating': user_rating,
     })
 
 
@@ -397,25 +412,30 @@ def rate_section(request):
                                     4 * section.two_star_users.count(),
                                     6 * section.three_star_users.count(),
                                     8 * section.four_star_users.count(),
-                                    10 * section.five_star_users.count()]) / total_users if total_users > 0 else 0)
+                                    10 * section.five_star_users.count()]) / total_users if total_users > 0 else 0, 1)
 
-        section.one_star_percentage = (section.one_star_users.count() / total_users * 100) if total_users > 0 else 0
-        section.two_star_percentage = (section.two_star_users.count() / total_users * 100) if total_users > 0 else 0
-        section.three_star_percentage = (section.three_star_users.count() / total_users * 100) if total_users > 0 else 0
-        section.four_star_percentage = (section.four_star_users.count() / total_users * 100) if total_users > 0 else 0
-        section.five_star_percentage = (section.five_star_users.count() / total_users * 100) if total_users > 0 else 0
+        section.one_star_percentage = round(
+            (section.one_star_users.count() / total_users * 100) if total_users > 0 else 0, 1)
+        section.two_star_percentage = round(
+            (section.two_star_users.count() / total_users * 100) if total_users > 0 else 0, 1)
+        section.three_star_percentage = round(
+            (section.three_star_users.count() / total_users * 100) if total_users > 0 else 0, 1)
+        section.four_star_percentage = round(
+            (section.four_star_users.count() / total_users * 100) if total_users > 0 else 0, 1)
+        section.five_star_percentage = round(
+            (section.five_star_users.count() / total_users * 100) if total_users > 0 else 0, 1)
 
         section.save()
-
         # 返回更新后的数据
         return JsonResponse({
-            'total_rating': section.total_rating,
+            'total_rating': f"{section.total_rating:.1f}",
             'ratings_count': section.ratings_count,
-            '1_star_percentage': section.one_star_percentage,
-            '2_star_percentage': section.two_star_percentage,
-            '3_star_percentage': section.three_star_percentage,
-            '4_star_percentage': section.four_star_percentage,
-            '5_star_percentage': section.five_star_percentage
+            '1_star_percentage': f"{section.one_star_percentage:.1f}",
+            '2_star_percentage': f"{section.two_star_percentage:.1f}",
+            '3_star_percentage': f"{section.three_star_percentage:.1f}",
+            '4_star_percentage': f"{section.four_star_percentage:.1f}",
+            '5_star_percentage': f"{section.five_star_percentage:.1f}",
+
         })
 
 

@@ -398,6 +398,12 @@
     width: 30px;
     font-size: 0.5em;
 }
+
+.highlighted {
+    color: #FFD700; /* Change to your preferred highlight color */
+}
+
+
 </style>
 
 
@@ -615,9 +621,9 @@
         return cookieValue;
     }
 
+    var existingRating = {{ user_rating }};
     function rateSection(star, sectionId, rating) {
-        var currentRating = rating;
-
+        var currentRating = existingRating === rating ? 0 : rating;
         fetch('/rate_section/', {  // 使用你的实际URL
             method: 'POST',
             body: JSON.stringify({'section_id': sectionId, 'rating': currentRating}),
@@ -628,7 +634,9 @@
         })
         .then(response => response.json())
         .then(data => {
+            existingRating = currentRating;
             updateRatingDisplay(data);
+            highlightStars(existingRating);
         });
     }
 
@@ -643,6 +651,49 @@
             document.querySelector(`.left-bar-${i}`).style.width = data[`${i}_star_percentage`] + '%';
         }
     }
+
+
+
+
+
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        highlightStars(existingRating);
+
+        // Add mouseover event to change the stars on hover
+        document.querySelectorAll('.rating-star').forEach(star => {
+            star.addEventListener('mouseover', (e) => {
+                const rating = parseInt(e.target.getAttribute('data-rating'));
+                highlightStars(rating);
+            });
+        });
+
+        // Add click event to set the rating
+        document.querySelectorAll('.rating-star').forEach(star => {
+            star.addEventListener('click', (e) => {
+                const rating = parseInt(e.target.getAttribute('data-rating'));
+                highlightStars(rating);
+            });
+        });
+
+        // Add mouseout event to reset the stars to the existing rating
+        document.querySelectorAll('.rating-box').forEach(box => {
+            box.addEventListener('mouseout', () => {
+                highlightStars(existingRating);
+            });
+        });
+    });
+
+    function highlightStars(rating) {
+        document.querySelectorAll('.rating-star').forEach(star => {
+            if (parseInt(star.getAttribute('data-rating')) <= rating) {
+                star.classList.add('highlighted');
+            } else {
+                star.classList.remove('highlighted');
+            }
+        });
+    }
+
 </script>
 
 
