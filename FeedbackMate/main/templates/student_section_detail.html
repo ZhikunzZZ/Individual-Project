@@ -550,9 +550,15 @@
         </div>
     {% for comment in comments %}
     <div class="comment" data-comment-id="{{ comment.id }}">
-        <img src="{{ comment.user.userinfo.user_image.url }}" alt="User Image" class="user-image">
-        <div class="comment-main" {% if comment.read %}style="border-color: #444791;"{% endif %}>
-            <p class="comment-username">{{ comment.user.username }}</p>
+        <img src="{% if comment.is_anonymous %}/media/img/user.png{% else %}{{ comment.user.userinfo.user_image.url }}{% endif %}" alt="User Image" class="user-image">
+        <div class="comment-main">
+            <p class="comment-username">
+                {% if comment.is_anonymous %}
+                    Anonymous
+                {% else %}
+                    {{ comment.user.username }}
+                {% endif %}
+            </p>
             <p class="comment-text">{{ comment.text }}</p>
             <div class="comment-actions">
                 {% if comment.user == request.user and comment.read %}
