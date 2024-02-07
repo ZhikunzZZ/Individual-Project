@@ -147,23 +147,16 @@
             margin-bottom: 20px;
             color: #666;
         }
+        #image-preview {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #000000;
+            margin-top: 10px;
+            background-size: cover;
+            background-position: center center;
+        }
     </style>
-    <script>
-        function updateCharCount() {
-            var info = document.getElementById('channel-info');
-            var count = document.getElementById('char-count');
-            count.textContent = info.value.length + '/500 characters'; // Update the text content with the length of the textarea value
-        }
-        function validateForm() {
-            var name = document.getElementById('channel-name').value;
-            var info = document.getElementById('channel-info').value;
-            if (name.trim() === '' || info.trim() === '') {
-                alert('Both fields are required.');
-                return false;  // Prevents the form from being submitted
-            }
-            return true;  // Allows the form to be submitted
-        }
-    </script>
+
 
 </head>
 
@@ -189,21 +182,35 @@
                 <label for="channel-name">Channel name:</label>
                 <input type="text" id="channel-name" name="channel-name" maxlength="70">
 
-                <label for="channel-info">Channel info:</label>
-                <textarea id="channel-info" name="channel-info" oninput="updateCharCount()" maxlength="500"></textarea>
-                <div id="char-count" class="char-counter">0/500 characters</div>
-
                 <label for="channel-image">Channel Image:</label>
                 <input type="file" id="channel-image" name="channel-image" accept="image/*">
-
+                <img id="image-preview" style="display: none; max-width: 100%; margin-top: 20px;">
                 <button type="submit" class="create-button">Create New Channel</button>
             </form>
         </div>
     </div>
 
     <script>
-        // Initialize the character count on page load
-        document.addEventListener('DOMContentLoaded', updateCharCount);
+        document.getElementById('channel-image').addEventListener('change', function(event) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var preview = document.getElementById('image-preview');
+                preview.src = e.target.result;
+                preview.style.display = 'block'; // 显示图片预览
+            };
+
+            // 读取选择的文件
+            reader.readAsDataURL(event.target.files[0]);
+        });
+        function validateForm() {
+            var name = document.getElementById('channel-name').value;
+            var info = document.getElementById('channel-info').value;
+            if (name.trim() === '' || info.trim() === '') {
+                alert('Both fields are required.');
+                return false;  // Prevents the form from being submitted
+            }
+            return true;  // Allows the form to be submitted
+        }
     </script>
 
 </body>

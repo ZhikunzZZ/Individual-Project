@@ -176,7 +176,7 @@
                 hoverTimeout = setTimeout(function() {
                     var itemRect = sectionItem.getBoundingClientRect();
                     // 计算.tooltiptext的垂直中心位置，使其垂直居中于.section-item
-                    var tooltipVerticalCenter = itemRect.top + (itemRect.height / 2) - (tooltipText.offsetHeight / 2) + 10;
+                    var tooltipVerticalCenter = itemRect.top + (itemRect.height / 2) - (tooltipText.offsetHeight / 2) + 13;
                     // 设置.tooltiptext的位置，使其右侧紧贴.section-item的右侧，并留出一定间隙
                     tooltipText.style.top = `${tooltipVerticalCenter}px`;
                     tooltipText.style.left = `${itemRect.right - 50}px`; // 根据需要调整间隙大小

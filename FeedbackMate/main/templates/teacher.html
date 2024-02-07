@@ -18,7 +18,10 @@
         .app-container {
             display: flex;
             flex-direction: column;
+            min-width: 1470px;
             max-height: 100vh; /* 视口高度 */
+            overflow-x: auto;
+            overflow-y: auto;
 
         }
         .header {
@@ -28,6 +31,7 @@
             padding: 20px;
             background-color: #444791;
             color: white;
+            height: 18px;
         }
 
         .logo {
@@ -74,16 +78,14 @@
         .main-container {
             display: flex;
             flex-grow: 1;
-            overflow: hidden; /* 隐藏超出主容器部分 */
+            height: calc(100vh - 58px);
         }
         .sidebar::-webkit-scrollbar {
             display: none;  /* 对于Chrome, Safari和Opera浏览器 */
         }
         .sidebar {
-            width: 75px; /* 或所需宽度 */
+            width: 55px; /* 或所需宽度 */
             background-color: #EBEBEB; /* 侧边栏背景颜色 */
-            min-height: 100vh;
-            max-height: 100vh;
             padding: 10px;
             display: flex;
             flex-direction: column;
@@ -116,8 +118,8 @@
             margin-bottom: 18px; /* 通道图标之间的间距 */
             border: 2px solid black; /* 添加黑色边框 */
             border-radius: 50%; /* 初始为圆形 */
-            width: 60px; /* 容器大小 */
-            height: 60px; /* 容器大小 */
+            width: 50px; /* 容器大小 */
+            height: 50px; /* 容器大小 */
             display: flex; /* 为了居中内容 */
             justify-content: center; /* 水平居中 */
             align-items: center; /* 垂直居中 */

@@ -323,9 +323,10 @@ def toggle_like(request):
 def edit_section(request, channel_id, section_id):
     channel = get_object_or_404(Channel, pk=channel_id)
     section = get_object_or_404(Section, pk=section_id, channel=channel)
+    user_info = UserInfo.objects.get(user=request.user)
     if request.method == 'POST':
-        section_title = request.POST.get('section_title')
-        section_description = request.POST.get('section_description')
+        section_title = request.POST.get('channel-name')
+        section_description = request.POST.get('channel-info')
 
         if section_title:
             section.title = section_title
@@ -337,6 +338,8 @@ def edit_section(request, channel_id, section_id):
     return render(request, 'edit_section_info.html', {
         'section': section,
         'channel': channel,
+        'username': user_info.profile_name,
+        'user_image': user_info.user_image.url,
     })
 
 
