@@ -11,16 +11,20 @@
             margin: 0;
             padding: 0;
             background: linear-gradient(to bottom, #59599B, white);
-            height: 100vh;
+            min-height: 100vh;
         }
+
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px;
+            height: 18px;
             background-color: #444791;
             color: white;
+            margin-bottom: 20px;
+            min-width: 600px;
         }
 
         .logo {
@@ -37,7 +41,7 @@
             margin-right: 10px;
         }
         .user-dropdown {
-        position: relative;
+            position: relative;
         }
 
         .user-dropdown-content {
@@ -64,6 +68,7 @@
         .user-dropdown:hover .user-dropdown-content {
             display: block;
         }
+
         .container {
             width: 600px; /* Adjusted for a better fit on the screen */
             height: 500px;
@@ -75,9 +80,6 @@
             border-radius: 8px;
         }
 
-        .header {
-            margin-bottom: 20px;
-        }
 
 
 
@@ -234,6 +236,7 @@
             </div>
         </div>
     </div>
+    <div class="main">
     <div class="container">
     <button onclick="location.href='{% url 'student' %}'" class="back-button">Back</button>
     <div class="title-container">
@@ -256,6 +259,7 @@
             {% endfor %}
         </div>
     {% endif %}
+    </div>
     </div>
 
     <script>

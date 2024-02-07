@@ -11,6 +11,7 @@
     box-shadow: 5px 0 5px -5px rgba(0,0,0,0.5), -5px 0 5px -5px rgba(0,0,0,0.5);
     width: 25%;
     min-width: 200px;
+    overflow-y: hidden;
 }
 
 .pin-code-display {
@@ -26,9 +27,13 @@
     height: calc(100vh - 58px - 116px);
     overflow-x: hidden;
     overflow-y: auto;
-    -ms-overflow-style: none;  /* 对于IE和Edge浏览器 */
-    scrollbar-width: none;  /* 对于Firefox浏览器 */
+
 }
+.section-block::-webkit-scrollbar {
+    width: 5px;
+
+}
+
 .section-item {
     display: block;  /* 让<a>标签表现得像块级元素 */
     padding: 10px;
@@ -54,35 +59,35 @@
     box-shadow: 0 0 1px rgba(0, 0, 0, 0); /* 边框效果 */
     border-color: #D9D9D9; /* 悬停时边框颜色 */
 }
+
 /* 自定义section工具提示样式 */
 .section-tooltip .section-tooltiptext {
-  visibility: hidden;
-  width: auto; /* 宽度根据内容自适应 */
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 10px; /* 适当的填充 */
-
-  position: absolute;
-  z-index: 1;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%); /* 确保工具提示左右居中 */
-  opacity: 0;
-  transition: opacity 0.3s;
+    position: absolute;
+    visibility: hidden;
+    background-color: #23272A;
+    color: #ffffff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 10px; /* 小一些的内边距 */
+    z-index: 1;
+    top: calc( 50% + 10px);
+    left: calc(50% + 10px);
+    transform: translateY(-50%); /* 垂直居中 */
+    white-space: nowrap; /* 防止文本换行 */
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s ease;
 }
 
 /* 工具提示箭头样式 */
 .section-tooltip .section-tooltiptext::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: black transparent transparent transparent;
+    content: " ";
+    position: absolute;
+    top: 50%;
+    right: 100%; /* 箭头位于弹框的左侧 */
+    margin-top: -5px; /* 向上移动，使箭头垂直居中 */
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #23272A transparent transparent;
 }
 
 .section-tooltip:hover .section-tooltiptext {
@@ -152,6 +157,42 @@
 </div>
 
 <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 获取所有的.section-tooltip元素
+        var sectionTooltips = document.querySelectorAll('.section-tooltip');
+
+        sectionTooltips.forEach(function(sectionTooltip) {
+            var tooltipText = sectionTooltip.querySelector('.section-tooltiptext');
+            var sectionItem = sectionTooltip.querySelector('.section-item');
+            var hoverTimeout; // 用于设置悬停的延时
+
+            sectionItem.addEventListener('mouseenter', function(e) {
+                // 清除之前的延时（如果有）
+                tooltipText.style.visibility = 'hidden';
+                clearTimeout(hoverTimeout);
+
+                // 设置新的延时
+                hoverTimeout = setTimeout(function() {
+                    var itemRect = sectionItem.getBoundingClientRect();
+                    // 计算.tooltiptext的垂直中心位置，使其垂直居中于.section-item
+                    var tooltipVerticalCenter = itemRect.top + (itemRect.height / 2) - (tooltipText.offsetHeight / 2) + 10;
+                    // 设置.tooltiptext的位置，使其右侧紧贴.section-item的右侧，并留出一定间隙
+                    tooltipText.style.top = `${tooltipVerticalCenter}px`;
+                    tooltipText.style.left = `${itemRect.right - 50}px`; // 根据需要调整间隙大小
+                    tooltipText.style.visibility = 'visible';
+                }, 1000); // 延迟2秒显示.tooltiptext
+            });
+
+            sectionItem.addEventListener('mouseleave', function(e) {
+                // 清除悬停的延时
+                clearTimeout(hoverTimeout);
+                // 马上隐藏.tooltiptext
+                tooltipText.style.visibility = 'hidden';
+            });
+        });
+    });
+
     function confirmExit(channelId) {
         var confirmAction = confirm("Are you sure you want to exit this channel? This action cannot be undone.");
         if (confirmAction) {

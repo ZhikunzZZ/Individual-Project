@@ -120,6 +120,7 @@ def joinChannel(request):
     return render(request, 'join_channel.html', {
         'pin_code': range(6),
         'user_image': user_info.user_image.url,
+        'username': user_info.profile_name,
     })
 
 def generate_pin_code():
