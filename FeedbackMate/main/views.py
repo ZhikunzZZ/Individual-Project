@@ -139,14 +139,13 @@ def create_unique_pin_code():
 def createChannel(request):
     if request.method == 'POST':
         channel_name = request.POST.get('channel-name')
-        channel_info = request.POST.get('channel-info')
         channel_image = request.FILES.get('channel-image')
         pin_code = create_unique_pin_code()
         if channel_image is not None:
-            Channel.objects.create(name=channel_name, description=channel_info, user=request.user, image=channel_image, pin_code=pin_code)
+            Channel.objects.create(name=channel_name, user=request.user, image=channel_image, pin_code=pin_code)
             return redirect('teacher')
         else:
-            Channel.objects.create(name=channel_name, description=channel_info, user=request.user, pin_code=pin_code)
+            Channel.objects.create(name=channel_name, user=request.user, pin_code=pin_code)
             return redirect('teacher')
     user_info = UserInfo.objects.get(user=request.user)
     return render(request, 'create_channel.html', {

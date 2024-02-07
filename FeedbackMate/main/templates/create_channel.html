@@ -10,7 +10,8 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0;
+            background: linear-gradient(to bottom, #59599B, white);
+            min-height: 100vh;
         }
 
         .header {
@@ -18,8 +19,11 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px;
-            background-color: #59599B;
+            height: 18px;
+            background-color: #444791;
             color: white;
+            margin-bottom: 20px;
+            min-width: 600px;
         }
 
         .logo {
@@ -63,28 +67,31 @@
         .user-dropdown:hover .user-dropdown-content {
             display: block;
         }
-                .container {
-            width: 30%; /* Adjusted for a better fit on the screen */
-            margin: 50px auto; /* Centered the container and gave it a top margin */
-            background-color: #fff;
+
+        .container {
+            width: 600px;
+            height: 500px;
+            margin: 50px auto;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2); /* Softer shadow */
+            border: 1px solid black; /* 添加黑色边框 */
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             border-radius: 8px;
         }
 
-        .header {
-            margin-bottom: 20px;
-        }
-
         .back-button {
-            border: none;
-            background-color: #ccc; /* Light grey background */
-            color: #333; /* Darker text color for contrast */
-            padding: 10px 15px; /* Padding to increase the clickable area */
-            margin-bottom: 30px; /* Space before the form starts */
+            display: inline-block; /* Changed from 'none' to 'inline-block' */
+            background-color: #59599B; /* Dark purple background, same as the header */
+            color: white; /* White text */
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            margin-top: 10px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 12px;
+            text-decoration: none; /* No underline */
             border-radius: 4px; /* Slightly rounded corners */
+            border: none; /* No border */
+            transition: background-color 0.3s;
         }
 
         .form-container {
@@ -101,59 +108,44 @@
             font-weight: bold;
         }
 
-        input[type="text"],
-        textarea {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #000000;
             border-radius: 4px;
+            display: block;
+            width: 97%;
         }
-
-        textarea {
-            height: 100px;
-            resize: none; /* Disabled resizing */
-        }
-
         .create-button {
-            padding: 10px 20px;
-            background-color: #000; /* Black background */
+            margin-top: 40px;
+            padding: 10px 15px;
+            background-color: #59599B;
             color: white;
             border: none;
-            border-radius: 0; /* Sharp corners */
+            border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
-            transition: background-color 0.3s; /* Smooth transition for hover effect */
+            width:100%;
+            transition: background-color 0.3s;
         }
 
-        .create-button:hover {
-            background-color: #555; /* Dark grey background on hover */
+        button:hover {
+            background-color: #484875;
+
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .container {
-                width: 90%; /* Takes more width on smaller screens */
-                margin-top: 20px; /* Less margin on the top */
-            }
-
-            .back-button {
-                margin-bottom: 20px; /* Less space before the form starts */
-            }
-        }
-        .char-counter {
-            text-align: right;
-            font-size: 12px;
-            margin-top: -20px; /* Position the counter above the textarea's bottom-right corner */
-            margin-bottom: 20px;
-            color: #666;
-        }
-        #image-preview {
+        .image-preview {
             width: 100px;
             height: 100px;
             border: 1px solid #000000;
             margin-top: 10px;
             background-size: cover;
             background-position: center center;
+        }
+        #square-preview {
+            /* 保持默认样式即可实现正方形 */
+        }
+        #circle-preview {
+            border-radius: 50%; /* 实现圆形 */
         }
     </style>
 
@@ -184,7 +176,8 @@
 
                 <label for="channel-image">Channel Image:</label>
                 <input type="file" id="channel-image" name="channel-image" accept="image/*">
-                <img id="image-preview" style="display: none; max-width: 100%; margin-top: 20px;">
+                <div id="square-preview" class="image-preview" style="background-image: url('/media/img/user.png');"></div>
+                <div id="circle-preview" class="image-preview" style="background-image: url('/media/img/user.png');"></div>
                 <button type="submit" class="create-button">Create New Channel</button>
             </form>
         </div>
@@ -194,9 +187,10 @@
         document.getElementById('channel-image').addEventListener('change', function(event) {
             var reader = new FileReader();
             reader.onload = function(e) {
-                var preview = document.getElementById('image-preview');
-                preview.src = e.target.result;
-                preview.style.display = 'block'; // 显示图片预览
+                var squarePreview = document.getElementById('square-preview');
+                var circlePreview = document.getElementById('circle-preview');
+                squarePreview.style.backgroundImage = 'url(' + e.target.result + ')';
+                circlePreview.style.backgroundImage = 'url(' + e.target.result + ')';
             };
 
             // 读取选择的文件
@@ -204,8 +198,7 @@
         });
         function validateForm() {
             var name = document.getElementById('channel-name').value;
-            var info = document.getElementById('channel-info').value;
-            if (name.trim() === '' || info.trim() === '') {
+            if (name.trim() === '') {
                 alert('Both fields are required.');
                 return false;  // Prevents the form from being submitted
             }
