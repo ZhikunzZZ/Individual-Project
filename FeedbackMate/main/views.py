@@ -21,6 +21,9 @@ import string
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk import pos_tag
+from PIL import Image, ImageDraw
+from django.core.files.base import ContentFile
+from io import BytesIO
 
 
 # Create your views here.
@@ -184,11 +187,10 @@ def createChannel(request):
         channel_image = request.FILES.get('channel-image')
         pin_code = create_unique_pin_code()
         if channel_image is not None:
-            Channel.objects.create(name=channel_name, user=request.user, image=channel_image, pin_code=pin_code)
-            return redirect('teacher')
+            new_channel = Channel.objects.create(name=channel_name, user=request.user, image=channel_image, pin_code=pin_code)
         else:
-            Channel.objects.create(name=channel_name, user=request.user, pin_code=pin_code)
-            return redirect('teacher')
+            new_channel = Channel.objects.create(name=channel_name, user=request.user, pin_code=pin_code)
+        return redirect('channel-detail', channel_id=new_channel.id)
     user_info = UserInfo.objects.get(user=request.user)
     return render(request, 'create_channel.html', {
         'username': user_info.profile_name,
