@@ -23,7 +23,7 @@ from main import views
 
 urlpatterns = [
     path('admin', admin.site.urls),
-    path('index/', views.index, name="index"),
+    path('', views.index, name="index"),
     path('login/', views.loginPage, name="login"),
     path('logout/', views.logoutUser, name="logout"),
     path('register/', views.registerPage, name="register"),
@@ -40,6 +40,7 @@ urlpatterns = [
     path('teacher/create_channel/', views.createChannel, name="create-channel"),
     path('channel/<int:channel_id>/create-section/', views.createSection, name='create-section'),
     path('student/exit-channel/<int:channel_id>/', views.exit_channel, name='exit-channel'),
+    path('edit-channel/<int:channel_id>/', views.edit_channel, name='edit-channel'),
     path('delete-channel/<int:channel_id>/', views.delete_channel, name='delete-channel'),
     path('delete-section/<int:section_id>/', views.delete_section, name='delete-section'),
     path('mark-comment-as-read/<int:comment_id>/', views.mark_comment_as_read, name='mark-comment-as-read'),

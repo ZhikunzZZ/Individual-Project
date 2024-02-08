@@ -588,13 +588,21 @@
         </div>
     {% for comment in comments %}
     <div class="comment" data-comment-id="{{ comment.id }}">
-        <img src="{% if comment.is_anonymous %}/media/img/user.png{% else %}{{ comment.user.userinfo.user_image.url }}{% endif %}" alt="User Image" class="user-image">
+        <img src="{% if comment.is_anonymous and comment.user != request.user %}/media/img/user.png{% else %}{{ comment.user.userinfo.user_image.url }}{% endif %}" alt="User Image" class="user-image">
         <div class="comment-main">
             <p class="comment-username">
                 {% if comment.is_anonymous %}
-                    Anonymous
+                    {% if comment.user == request.user %}
+                        You (Anonymous)
+                    {% else %}
+                        Anonymous
+                    {% endif %}
                 {% else %}
-                    {{ comment.user.username }}
+                    {% if comment.user == request.user %}
+                        You
+                    {% else %}
+                        {{ comment.user.userinfo.profile_name }}
+                    {% endif %}
                 {% endif %}
             </p>
             <p class="comment-text">{{ comment.text }}</p>

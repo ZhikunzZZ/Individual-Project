@@ -207,6 +207,10 @@
             background: #555;
         }
 
+        .prompt-box {
+
+        }
+
     </style>
     {% endblock styles %}
 </head>
@@ -244,6 +248,9 @@
                 {% endblock %}
             </div>
             {% block content %}
+            <div class="prompt-box">
+
+            </div>
             {% endblock %}
         </div>
     </div>
@@ -299,7 +306,7 @@
                     var editButton = customContextMenu.querySelector('#edit-channel');
                     var deleteButton = customContextMenu.querySelector('#delete-channel');
 
-                    editButton.onclick = function() {console.log('Editing info for channel ' + channelId);};
+                    editButton.onclick = function() { goToEditChannelPage(channelId); };
                     deleteButton.onclick = function() { deleteChannel(channelId); };
                 });
             });
@@ -309,6 +316,10 @@
                 customContextMenu.style.display = 'none';
             });
         });
+        function goToEditChannelPage(channelId) {
+            // 使用window.location.href跳转到编辑频道的页面
+            window.location.href = '/edit-channel/' + channelId + '/';
+        }
         function deleteChannel(channelId) {
             // 弹出确认框
             var confirmDelete = confirm("Are you sure you want to delete this channel?");

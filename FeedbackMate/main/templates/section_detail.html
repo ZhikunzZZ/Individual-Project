@@ -292,6 +292,9 @@
     cursor: pointer;
     margin-left: 10px;
 }
+.read-indicator {
+    cursor: default;
+}
 
 .reply {
     display: flex;
@@ -517,6 +520,7 @@
         </div>
         <div class="right-part">
             <div class="rating-statistics">
+                Rating distribution:
                 <div class="rating-stat" data-star="5">
                     <i class="fas fa-star"></i>
                     <i class="fas fa-star"></i>
@@ -603,9 +607,23 @@
         </div>
     {% for comment in comments %}
     <div class="comment">
-        <img src="{{ comment.user.userinfo.user_image.url }}" alt="User Image" class="user-image">
+        <img src="{% if comment.is_anonymous and comment.user != request.user %}/media/img/user.png{% else %}{{ comment.user.userinfo.user_image.url }}{% endif %}" alt="User Image" class="user-image">
         <div class="comment-main" {% if comment.read %}style="border-color: #444791;"{% endif %}>
-            <p class="comment-username">{{ comment.user.username }}</p>
+            <p class="comment-username">
+                {% if comment.is_anonymous %}
+                    {% if comment.user == request.user %}
+                        You (Anonymous)
+                    {% else %}
+                        Anonymous
+                    {% endif %}
+                {% else %}
+                    {% if comment.user == request.user %}
+                        You
+                    {% else %}
+                        {{ comment.user.userinfo.profile_name }}
+                    {% endif %}
+                {% endif %}
+            </p>
             <p class="comment-text">{{ comment.text }}</p>
             <div class="comment-actions">
                 <div class="likes">
@@ -680,7 +698,7 @@
                 if (data.success) {
                     // 创建已读图标
                     const readIndicator = document.createElement('i');
-                    readIndicator.classList.add('fas', 'fa-check-circle', 'read-indicator');
+                    readIndicator.classList.add('fas', 'fa-eye', 'read-indicator');
                     // 替换标记为已读按钮为已读图标
                     button.replaceWith(readIndicator);
                     // 更新边框颜色

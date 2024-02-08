@@ -26,7 +26,7 @@ from nltk import pos_tag
 # Create your views here.
 @login_required(login_url='login')
 def index(request):
-    return render(request, 'main.html')
+    return redirect('teacher')
 
 
 @login_required(login_url='login')
@@ -44,6 +44,7 @@ def teacherPage(request):
 
 # def teacherSectionPage(request, channel_id):
 
+
 @login_required(login_url='login')
 @student_required
 def studentPage(request):
@@ -56,6 +57,7 @@ def studentPage(request):
     })
 
 
+@login_required(login_url='login')
 def editPersonalInfoPage(request):
     if request.method == 'POST':
         profile_name = request.POST.get('profile_name')
@@ -76,7 +78,39 @@ def editPersonalInfoPage(request):
         'user_image': user_info.user_image.url
     })
 
+
+@login_required(login_url='login')
+@teacher_required
+def edit_channel(request, channel_id):
+    channel = get_object_or_404(Channel, pk=channel_id)
+    user_info = UserInfo.objects.get(user=request.user)
+    if request.method == 'POST':
+        name = request.POST.get('profile_name')
+        channel_image = request.FILES.get('user_image')
+
+        if name:
+            channel.name = name
+        if channel_image:
+            channel.image = channel_image
+        channel.save()
+        return redirect('channel-detail', channel_id=channel.id)
+    return render(request, 'edit_channel.html', {
+        'channel': channel,
+        'user_info': user_info,
+        'username': user_info.profile_name,
+        'user_image': user_info.user_image.url,
+        'channel_image': channel.image.url,
+    })
+
+
+@login_required(login_url='login')
+@teacher_required
 def channel(request, channel_id):
+    try:
+        channel = Channel.objects.get(id=channel_id)
+        # 渲染频道详情页面的逻辑
+    except Channel.DoesNotExist:
+        return redirect('teacher')
     user_channels = Channel.objects.filter(user=request.user)
     current_channel = Channel.objects.get(id=channel_id)
     sections = Section.objects.filter(channel=current_channel)
@@ -90,6 +124,9 @@ def channel(request, channel_id):
         'user_image': user_info.user_image.url,
     })
 
+
+@login_required(login_url='login')
+@student_required
 def studentChannel(request, channel_id):
     user_channels = request.user.joined_channels.all()
     current_channel = Channel.objects.get(id=channel_id)
@@ -104,6 +141,8 @@ def studentChannel(request, channel_id):
     })
 
 
+@login_required(login_url='login')
+@student_required
 def joinChannel(request):
     user_info = UserInfo.objects.get(user=request.user)
     if request.method == 'POST':
@@ -123,9 +162,11 @@ def joinChannel(request):
         'username': user_info.profile_name,
     })
 
+
 def generate_pin_code():
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(6))
+
 
 # 创建唯一 PIN 码的函数
 def create_unique_pin_code():
@@ -135,7 +176,8 @@ def create_unique_pin_code():
             return pin_code
 
 
-
+@login_required(login_url='login')
+@teacher_required
 def createChannel(request):
     if request.method == 'POST':
         channel_name = request.POST.get('channel-name')
@@ -153,6 +195,9 @@ def createChannel(request):
         'user_image': user_info.user_image.url,
     })
 
+
+@login_required(login_url='login')
+@teacher_required
 def createSection(request, channel_id):
     channel = get_object_or_404(Channel, pk=channel_id)
     if request.method == 'POST':
@@ -168,6 +213,8 @@ def createSection(request, channel_id):
     })
 
 
+@login_required(login_url='login')
+@teacher_required
 @require_POST
 def delete_channel(request, channel_id):
     try:
@@ -182,7 +229,14 @@ def delete_channel(request, channel_id):
         return JsonResponse({'error': 'Internal Server Error'}, status=500)
 
 
+@login_required(login_url='login')
+@teacher_required
 def section(request, channel_id, section_id):
+    try:
+        channel = Channel.objects.get(id=channel_id)
+        # 渲染频道详情页面的逻辑
+    except Channel.DoesNotExist:
+        return redirect('teacher')
     user_channels = Channel.objects.filter(user=request.user)
     current_channel = Channel.objects.get(id=channel_id)
     sections = Section.objects.filter(channel=current_channel)
@@ -239,9 +293,12 @@ def section(request, channel_id, section_id):
         'sort': sort,
         'search_query': search_query,
         'top_keywords': top_keywords,
+        'user_info': user_info,
     })
 
 
+@login_required(login_url='login')
+@student_required
 def studentSection(request, channel_id, section_id):
     user_channels = request.user.joined_channels.all()
     current_channel = Channel.objects.get(id=channel_id)
@@ -294,9 +351,12 @@ def studentSection(request, channel_id, section_id):
         'sort': sort,
         'search_query': search_query,
         'user_rating': user_rating,
+        'user_info': user_info,
     })
 
 
+@login_required(login_url='login')
+@student_required
 def toggle_like(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -319,6 +379,8 @@ def toggle_like(request):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
+@login_required(login_url='login')
+@teacher_required
 def edit_section(request, channel_id, section_id):
     channel = get_object_or_404(Channel, pk=channel_id)
     section = get_object_or_404(Section, pk=section_id, channel=channel)
@@ -342,12 +404,17 @@ def edit_section(request, channel_id, section_id):
     })
 
 
+@login_required(login_url='login')
+@teacher_required
 def delete_section(request, section_id):
     section = get_object_or_404(Section, id=section_id, channel__user=request.user)
     channel_id = section.channel.id  # Capture the channel id to redirect after deletion
     section.delete()
     return HttpResponseRedirect(reverse('channel-detail', args=[channel_id]))
 
+
+@login_required(login_url='login')
+@student_required
 def exit_channel(request, channel_id):
     channel = get_object_or_404(Channel, id=channel_id)
     if request.user in channel.students.all():
@@ -356,6 +423,8 @@ def exit_channel(request, channel_id):
     return redirect('student')
 
 
+@login_required(login_url='login')
+@student_required
 def submit_feedback(request, section_id):
     section = get_object_or_404(Section, id=section_id)
     if request.method == 'POST':
@@ -376,6 +445,8 @@ def submit_feedback(request, section_id):
     return redirect('student-section', channel_id=section.channel.id, section_id=section_id)
 
 
+@login_required(login_url='login')
+@student_required
 def rate_section(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -441,6 +512,8 @@ def rate_section(request):
         })
 
 
+@login_required(login_url='login')
+@student_required
 def delete_comment(request, comment_id):
     if request.method == 'POST':
         comment = get_object_or_404(Comment, pk=comment_id, user=request.user)  # Ensures the user can only delete their own comments
@@ -449,6 +522,8 @@ def delete_comment(request, comment_id):
     return JsonResponse({'success': False}, status=400)
 
 
+@login_required(login_url='login')
+@teacher_required
 def mark_comment_as_read(request, comment_id):
     if request.method == "POST" and request.user.is_authenticated:
         comment = Comment.objects.get(id=comment_id)
@@ -458,6 +533,8 @@ def mark_comment_as_read(request, comment_id):
     return JsonResponse({"success": False})
 
 
+@login_required(login_url='login')
+@teacher_required
 def update_comment_reply(request, comment_id):
     if request.method == 'POST':
         comment = Comment.objects.get(id=comment_id)
@@ -489,6 +566,7 @@ def loginPage(request):
     return render(request, 'login.html')
 
 
+@login_required(login_url='login')
 def logoutUser(request):
     logout(request)
     return redirect('login')
