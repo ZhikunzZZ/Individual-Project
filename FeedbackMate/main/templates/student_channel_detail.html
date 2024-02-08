@@ -125,8 +125,25 @@
     background-color: #373759; /* Slightly darker on hover */
 }
 
+.home-link {
+    margin-right: auto; /* 保证链接和logo保持在左侧，而用户信息在右侧 */
+    margin-top: 5px;
+    margin-left: 20px; /* 与logo之间的间隙 */
+    color: white; /* 链接颜色 */
+    text-decoration: none; /* 去除下划线 */
+    font-size: 15px; /* 字体大小 */
+}
+
+.home-link:hover {
+    text-decoration: underline; /* 鼠标悬浮时添加下划线，增加交互性 */
+}
+
 </style>
 {% endblock styles %}
+
+{% block home %}
+<a href="{% url 'student' %}" class="home-link">Home</a>
+{% endblock home %}
 
 {% block channel %}
     {% for channel in channels %}
