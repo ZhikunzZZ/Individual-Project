@@ -168,6 +168,50 @@
             transform: translateY(-3px); /* 轻微上移表示按钮被按下 */
             /* 可以添加更多的样式变化，如边框颜色、文字阴影等 */
         }
+        #messageModal {
+            position: fixed; /* 固定定位，确保模态框总是相对于视口定位 */
+            z-index: 1000; /* 确保模态框在其他内容之上 */
+            left: 50%;
+            top: 40%;
+            transform: translateX(-50%); /* 使用变换向左移动模态框的一半宽度，确保它的中心对齐视口的中心 */
+            width: auto; /* 宽度自动，根据内容调整 */
+            max-width: 450px; /* 最大宽度，避免模态框过宽 */
+            overflow: auto; /* 如果内容超出模态框大小，则显示滚动条 */
+            display: flex; /* 使用Flex布局 */
+            align-items: center; /* 垂直居中内容 */
+            justify-content: center; /* 水平居中内容 */
+            flex-direction: column; /* 子元素垂直排列 */
+        }
+
+        #messageModalContent {
+            border: 2px solid black;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px; /* 圆角 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 阴影效果 */
+            margin: 0 20px; /* 左右边距，确保在小屏幕上也有间距 */
+        }
+
+        .close-btn {
+            cursor: pointer;
+            float: right;
+            font-size: 24px; /* 关闭按钮大小 */
+            font-weight: bold;
+            color: #aaa; /* 关闭按钮颜色 */
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black; /* 鼠标悬停或聚焦时颜色变深 */
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* 消息文本样式 */
+        #modalText {
+            margin-top: 15px; /* 与关闭按钮有一定间距 */
+            font-size: 16px; /* 文本大小 */
+}
     </style>
 </head>
 <body>
@@ -191,26 +235,31 @@
                 </div>
                 <input type="submit" class="signup-btn" value="LOG&nbsp;&nbsp;&nbsp;IN">
             </form>
-
+        </div>
+    </div>
+    <div id="messageModal" style="display:none;">
+        <div id="messageModalContent">
+            <span class="close-btn" onclick="document.getElementById('messageModal').style.display='none'">&times;</span>
+            <p id="modalText">这里将显示消息内容</p>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
     {% if messages %}
-    <script type="text/javascript">
-    window.onload = function() {
-        // 设置消息内容并显示模态框
-        var messageText = "";
-        {% for message in messages %}
-        messageText += "{{ message }}\n";
-        {% endfor %}
-        document.getElementById('successMessage').innerText = messageText;
-        $('#successModal').modal('show');
-    }
+    <script>
+        window.onload = function() {
+            var messages = "";
+            {% for message in messages %}
+            messages += "<p>{{ message }}</p>";
+            {% endfor %}
+
+            var closeButtonHtml = '<span onclick="document.getElementById(\'messageModal\').style.display=\'none\'" style="cursor:pointer; float: right;">&times;</span>';
+            document.getElementById('messageModalContent').innerHTML = closeButtonHtml + messages;
+            document.getElementById('messageModal').style.display = 'block';
+        };
     </script>
     {% endif %}
+
+
 
 </body>
 </html>

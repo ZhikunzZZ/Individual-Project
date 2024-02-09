@@ -592,7 +592,7 @@ def registerPage(request):
                 group, created = Group.objects.get_or_create(name='teacher')
                 user.groups.add(group)
 
-            messages.success(request, 'Account was created for' + username)
+            messages.success(request, 'Account have created:  ' + username)
             return redirect('login')
 
     context = {'form': form}
