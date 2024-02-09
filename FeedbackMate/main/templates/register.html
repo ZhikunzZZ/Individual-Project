@@ -4,30 +4,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Protest+Guerrilla&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&display=swap" rel="stylesheet">
     <title>FeedbackMATE Sign Up</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
+            padding: 0;
+            border: 0;
             background: linear-gradient(to bottom, #59599B, white);
             display: flex;
             height: 100vh;
+            width: 100vw;
             align-items: center;
             justify-content: center;
+            min-width: 1020px;
+            min-height: 600px;
+            overflow: auto;
         }
 
         .container {
             background-color: #fff;
-            border-radius: 0 90px 90px 0;
+            margin: 50px 10px 50px 10px;
+            border-radius: 10px;
             display: flex;
-            width: 90%;
-            height: 90%;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 1000px;
+            height: 600px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             overflow: hidden;
         }
 
         .left-content {
-            flex-basis: 35%;
+            width: 417px;
+            height: 600px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -40,33 +52,34 @@
         .right-content {
             position: relative;
             flex: 1.5;
-            padding: 20px;
+            width: 583px;
+            height: 600px;
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
+            overflow: hidden;
         }
         .sign-up{
             position: relative;
-            top: 70px;
+            top: 20px;
             text-align: center;
-            font-size: 50px;
+            font-size: 30px;
             font-weight: bold;
             color: #000;
-            margin-top: 20px;
             margin-bottom: 50px;
             text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
-            font-family:华文彩云;
+            font-family: 'Orbitron', sans-serif;
         }
 
         .back-button {
+            font-family: 'Protest Guerrilla', sans-serif;
+            color: #59599B;
             text-decoration: none;
             position: relative;
-            top: 20px;
+            top: 10px;
             left: 20px;
-            color: black;
             border: none;
             background: transparent;
-            font-size: 20px;
+            font-size: 15px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -80,15 +93,16 @@
 
         .input-group {
             position: relative;
-            top:50px;
+            top:10px;
             margin-bottom: 0;
-            width: 40%;
+            width: 60%;
             margin-left: auto;
             margin-right: auto;
         }
 
         input[type="text"], input[type="password"], input[type="email"], select {
             width: 100%;
+            font-family: 'Nunito Sans', sans-serif;
             padding: 40px 10px 10px 10px;
             border: 2px solid #e1e4e8;
             border-top: none;
@@ -100,6 +114,7 @@
 
         input[type="text"]:first-of-type, input[type="password"]:first-of-type, input[type="email"]:first-of-type, select:first-of-type {
             border-top: 0;
+            font-family: 'Nunito Sans', sans-serif;
             box-sizing: border-box;
             width: 100%;
         }
@@ -109,6 +124,7 @@
 
         label {
             position: absolute;
+            font-family: 'Orbitron', sans-serif;
             top: 45px;
             left: 10px;
             font-weight: bold;
@@ -131,36 +147,28 @@
 
         .signup-btn {
             position: relative;
-            top:100px;
+            top:25px;
             background-color: #24243E;
             color: #fff;
             border: none;
-            padding: 15px 40px;
+            padding: 2px 10px;
             border-radius: 30px;
-            font-size: 30px;
+            font-size: 32px;
+            font-family: 'Protest Guerrilla', sans-serif;
             cursor: pointer;
             text-align: center;
             display: block;
             margin: 20px auto;
-            width: 400px;
+            width: 350px;
+            height: 50px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .signup-btn:hover {
+            background-color: #3a3a5e; /* 按钮背景颜色在悬停时变暗 */
+            transform: translateY(-3px); /* 轻微上移表示按钮被按下 */
+            /* 可以添加更多的样式变化，如边框颜色、文字阴影等 */
         }
 
-       .form-errors {
-            width: 40%;
-            margin-top: 120px;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 10px 15px;
-            box-sizing: border-box;
-            text-align: center;
-            color: #8B0000;
-            background-color: #FFD2D2;
-            border: 1px solid #D8000C;
-            border-radius: 5px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            font-size: 14px;
-            line-height: 1.5;
-        }
     </style>
 </head>
 
@@ -171,7 +179,7 @@
             <a href="{% url 'login' %}" class="back-button">
                 <span>< LOGIN</span>
             </a>
-            <h1 id="sign-up" class="sign-up">Sign Up to FeedbackMate</h1>
+            <h1 id="sign-up" class="sign-up">Welcome to FeedbackMate</h1>
             <form method="POST" action="">
                 {% csrf_token %}
 
@@ -202,14 +210,31 @@
                     </select>
                     <label for="user_type">User Type</label>
                 </div>
-                <input type="submit" class="signup-btn" value="SIGN&nbsp;&nbsp;&nbsp;UP">
+                <input type="submit" class="signup-btn" value="SIGN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UP">
             </form>
-            {% if form.errors %}
-            <div class="form-errors">
-                {{ form.errors }}
-            </div>
-            {% endif %}
+
         </div>
     </div>
+
+    <script>
+    window.onload = function() {
+        setTimeout(function() {
+            // 检查是否有表单错误
+            {% if form.errors %}
+            let errors = [];
+            {% for field in form %}
+                {% for error in field.errors %}
+                    errors.push('{{ field.label }}: {{ error }}');
+                {% endfor %}
+            {% endfor %}
+
+            // 如果有错误，则显示弹窗
+            if(errors.length > 0) {
+                alert("Registration failed, please check:\n" + errors.join("\n"));
+            }
+            {% endif %}
+        }, 100); // 延迟1秒钟
+    };
+    </script>
 </body>
 </html>
