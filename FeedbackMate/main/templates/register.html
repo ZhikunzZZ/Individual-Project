@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Protest+Guerrilla&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&display=swap" rel="stylesheet">
@@ -164,9 +165,8 @@
             transition: background-color 0.3s, transform 0.3s;
         }
         .signup-btn:hover {
-            background-color: #3a3a5e; /* 按钮背景颜色在悬停时变暗 */
-            transform: translateY(-3px); /* 轻微上移表示按钮被按下 */
-            /* 可以添加更多的样式变化，如边框颜色、文字阴影等 */
+            background-color: #3a3a5e;
+            transform: translateY(-3px);
         }
 
     </style>
@@ -184,29 +184,29 @@
                 {% csrf_token %}
 
                 <div class="input-group">
-                    <input type="text" id="username" name="username" placeholder=" ">
+                    <input type="text" id="username" name="username" placeholder=" " value="{{ form.username.value|default_if_none:'' }}" required>
                     <label for="username">{{form.username.label}}</label>
                 </div>
 
                 <div class="input-group">
-                    <input type="email" id="email" name="email" placeholder=" ">
+                    <input type="email" id="email" name="email" placeholder=" " value="{{ form.email.value|default_if_none:'' }}" required>
                     <label for="email">{{form.email.label}}</label>
                 </div>
 
                 <div class="input-group">
-                    <input type="password" id="password1" name="password1" placeholder=" ">
+                    <input type="password" id="password1" name="password1" placeholder=" " value="{{ form.password1.value|default_if_none:'' }}" required>
                     <label for="password1">{{form.password1.label}}</label>
                 </div>
 
                 <div class="input-group">
-                    <input type="password" id="password2" name="password2" placeholder=" ">
+                    <input type="password" id="password2" name="password2" placeholder=" " required>
                     <label for="password2">{{form.password2.label}}</label>
                 </div>
 
                 <div class="input-group">
                     <select id="user_type" name="user_type" placeholder=" ">
-                        <option value="teacher">Teacher</option>
-                        <option value="student">Student</option>
+                        <option value="teacher" {% if user_type == "teacher" %}selected{% endif %}>Teacher</option>
+                        <option value="student" {% if user_type == "student" %}selected{% endif %}>Student</option>
                     </select>
                     <label for="user_type">User Type</label>
                 </div>
@@ -235,6 +235,7 @@
             {% endif %}
         }, 100); // 延迟1秒钟
     };
+
     </script>
 </body>
 </html>

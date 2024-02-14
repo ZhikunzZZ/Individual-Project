@@ -168,11 +168,12 @@
             transform: translateY(-3px); /* 轻微上移表示按钮被按下 */
             /* 可以添加更多的样式变化，如边框颜色、文字阴影等 */
         }
+
         #messageModal {
             position: fixed; /* 固定定位，确保模态框总是相对于视口定位 */
             z-index: 1000; /* 确保模态框在其他内容之上 */
             left: 50%;
-            top: 40%;
+            top: 0;
             transform: translateX(-50%); /* 使用变换向左移动模态框的一半宽度，确保它的中心对齐视口的中心 */
             width: auto; /* 宽度自动，根据内容调整 */
             max-width: 450px; /* 最大宽度，避免模态框过宽 */
@@ -190,21 +191,6 @@
             border-radius: 8px; /* 圆角 */
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 阴影效果 */
             margin: 0 20px; /* 左右边距，确保在小屏幕上也有间距 */
-        }
-
-        .close-btn {
-            cursor: pointer;
-            float: right;
-            font-size: 24px; /* 关闭按钮大小 */
-            font-weight: bold;
-            color: #aaa; /* 关闭按钮颜色 */
-        }
-
-        .close-btn:hover,
-        .close-btn:focus {
-            color: black; /* 鼠标悬停或聚焦时颜色变深 */
-            text-decoration: none;
-            cursor: pointer;
         }
 
         /* 消息文本样式 */
@@ -226,11 +212,11 @@
                 {% csrf_token %}
 
                 <div class="input-group">
-                    <input type="text" id="username" name="username" placeholder=" ">
+                    <input type="text" id="username" name="username" placeholder=" "  value="{{ username|default_if_none:'' }}" required>
                     <label for="username">Username</label>
                 </div>
                 <div class="input-group">
-                    <input type="password" id="email" name="password" placeholder=" ">
+                    <input type="password" id="email" name="password" placeholder=" " required>
                     <label for="email">Password</label>
                 </div>
                 <input type="submit" class="signup-btn" value="LOG&nbsp;&nbsp;&nbsp;IN">
@@ -239,8 +225,7 @@
     </div>
     <div id="messageModal" style="display:none;">
         <div id="messageModalContent">
-            <span class="close-btn" onclick="document.getElementById('messageModal').style.display='none'">&times;</span>
-            <p id="modalText">这里将显示消息内容</p>
+            <p id="modalText"> </p>
         </div>
     </div>
 
@@ -252,9 +237,14 @@
             messages += "<p>{{ message }}</p>";
             {% endfor %}
 
-            var closeButtonHtml = '<span onclick="document.getElementById(\'messageModal\').style.display=\'none\'" style="cursor:pointer; float: right;">&times;</span>';
-            document.getElementById('messageModalContent').innerHTML = closeButtonHtml + messages;
+            // 不再添加关闭按钮的HTML
+            document.getElementById('messageModalContent').innerHTML = messages;
             document.getElementById('messageModal').style.display = 'block';
+
+            // 设置计时器，2秒后执行关闭弹窗的函数
+            setTimeout(function() {
+                document.getElementById('messageModal').style.display = 'none';
+            }, 3000); // 2000毫秒后自动执行
         };
     </script>
     {% endif %}

@@ -74,6 +74,8 @@
     margin-bottom: 0;
     width: 450px;
     height: 50px;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 .section-title {
@@ -84,13 +86,44 @@
 
 .section-description{
     white-space: normal;
-    word-wrap: break-word;
+    word-break: break-all;
     overflow-wrap: break-word;
     width: 400px;
-    height: 50px;
+    height: 70px;
     border: 1px solid black;
     border-radius: 4px;
-    padding: 15px;
+    padding: 5px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    text-align: justify;
+}
+
+/* 滚动条的整体样式 */
+.section-description::-webkit-scrollbar {
+    width: 5px;
+
+}
+
+/* 滚动条轨道的样式 */
+.section-description::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+/* 滚动条滑块的样式 */
+.section-description::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 20px;
+}
+
+/* 当鼠标悬停在滚动条滑块上时的样式 */
+.section-description::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* 当滚动条滑块被点击时的样式 */
+.section-description::-webkit-scrollbar-thumb:active {
+    background: #333;
 }
 
 
@@ -145,8 +178,8 @@
 
 .comment-text {
     white-space: normal; /* 允许文本在需要时换行 */
-    word-wrap: break-word; /* 在单词太长而无法在一行中显示时，允许它断开到下一行 */
-    overflow-wrap: break-word; /* 同上，确保文本不会溢出容器 */
+    word-break: break-all;
+    overflow-wrap: break-word;
     margin-bottom: 30px;
 }
 
@@ -207,6 +240,8 @@
     height: 40px;
     padding: 10px;
     border: 2px solid #000000;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 .owner-image {
@@ -418,11 +453,19 @@
 .left-bar-5 {
     width: {{ current_section.five_star_percentage }}%;
 }
+.rating-heading {
+    margin-bottom: -15px;
+}
 .rating-heading h3 {
     font-size: 1.2em; /* 调整大小 */
     color: #000000; /* 调整颜色，这里用了之前用于按钮的颜色 */
     margin-bottom: 5px; /* 下方间距 */
-    margin-top: 5px;
+    margin-top: 0;
+}
+.rating-heading p {
+    font-size: 0.7em;
+    margin: 0;
+    color: #23272A;
 }
 .rating-buttons {
     margin-left: 20px;
@@ -451,6 +494,12 @@
     background-color: #D9D9D9;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0);
     border-color: #D9D9D9;
+}
+
+.no-comments {
+    margin-top: 30px;
+    font-size: 20px;
+    text-align: center;
 }
 
 </style>
@@ -556,6 +605,7 @@
                 </div>
             </div>
             <div class="rating-heading">
+                <p>*Repeated clicks can cancel the rating</p>
                 <h3>Rating here:</h3>
             </div>
             <div class="rating-buttons" data-current-rating="0">
@@ -582,49 +632,53 @@
         <form method="get" action="" class="search-form">
             <input type="text" name="search" placeholder="Search comments..." value="{{ request.GET.search|default:'' }}">
             <!-- 保存排序参数的隐藏字段 -->
-            <input type="hidden" name="sort" value="{{ request.GET.sort|default:'read' }}">
+            <input type="hidden" name="sort" value="{{ request.GET.sort|default:'user_first' }}">
             <button type="submit">Search</button>
         </form>
         </div>
-    {% for comment in comments %}
-    <div class="comment" data-comment-id="{{ comment.id }}">
-        <img src="{% if comment.is_anonymous and comment.user != request.user %}/media/img/user.png{% else %}{{ comment.user.userinfo.user_image.url }}{% endif %}" alt="User Image" class="user-image">
-        <div class="comment-main">
-            <p class="comment-username">
-                {% if comment.is_anonymous %}
-                    {% if comment.user == request.user %}
-                        You (Anonymous)
+    {% if comments.exists %}
+        {% for comment in comments %}
+        <div class="comment" data-comment-id="{{ comment.id }}">
+            <img src="{% if comment.is_anonymous and comment.user != request.user %}/media/img/user.png{% else %}{{ comment.user.userinfo.user_image.url }}{% endif %}" alt="User Image" class="user-image">
+            <div class="comment-main">
+                <p class="comment-username">
+                    {% if comment.is_anonymous %}
+                        {% if comment.user == request.user %}
+                            You (Anonymous)
+                        {% else %}
+                            Anonymous
+                        {% endif %}
                     {% else %}
-                        Anonymous
+                        {% if comment.user == request.user %}
+                            You
+                        {% else %}
+                            {{ comment.user.userinfo.profile_name }}
+                        {% endif %}
                     {% endif %}
-                {% else %}
+                </p>
+                <p class="comment-text">{{ comment.text }}</p>
+                <div class="comment-actions">
+                    {% if comment.user == request.user and comment.read %}
+                        <i class="fas fa-eye read-indicator"></i>
+                    {% endif %}
                     {% if comment.user == request.user %}
-                        You
-                    {% else %}
-                        {{ comment.user.userinfo.profile_name }}
+                    <i class="fas fa-trash delete-comment" data-comment-id="{{ comment.id }}" onclick="confirmDeleteComment(this)"></i>
                     {% endif %}
-                {% endif %}
-            </p>
-            <p class="comment-text">{{ comment.text }}</p>
-            <div class="comment-actions">
-                {% if comment.user == request.user and comment.read %}
-                    <i class="fas fa-eye read-indicator"></i>
-                {% endif %}
-                {% if comment.user == request.user %}
-                <i class="fas fa-trash delete-comment" data-comment-id="{{ comment.id }}" onclick="confirmDeleteComment(this)"></i>
-                {% endif %}
-                <div class="likes" data-comment-id="{{ comment.id }}">
-                    <i class="fas fa-thumbs-up {% if request.user in comment.liked_users.all %}liked{% endif %}" onclick="toggleLike(this)"></i>
-                    <span class="like-count">{{ comment.likes }}</span>
+                    <div class="likes" data-comment-id="{{ comment.id }}">
+                        <i class="fas fa-thumbs-up {% if request.user in comment.liked_users.all %}liked{% endif %}" onclick="toggleLike(this)"></i>
+                        <span class="like-count">{{ comment.likes }}</span>
+                    </div>
+                </div>
+                <div class="reply" {% if not comment.reply %}style="display:none;"{% endif %}>
+                    <img src="{{ comment.section.channel.user.userinfo.user_image.url }}" alt="Owner Image" class="owner-image">
+                    <p class="reply-content">{{ comment.reply }}</p>
                 </div>
             </div>
-            <div class="reply" {% if not comment.reply %}style="display:none;"{% endif %}>
-                <img src="{{ comment.section.channel.user.userinfo.user_image.url }}" alt="Owner Image" class="owner-image">
-                <p class="reply-content">{{ comment.reply }}</p>
-            </div>
         </div>
-    </div>
-    {% endfor %}
+        {% endfor %}
+    {% else %}
+        <p class="no-comments">No comment yet.</p>
+    {% endif %}
     </div>
     <div class="provide-feedback-section">
         <form method="post" action="{% url 'submit-feedback' current_section.id %}">
@@ -801,4 +855,7 @@
 
 
 
+{% endblock %}
+
+{% block channel_info %}
 {% endblock %}

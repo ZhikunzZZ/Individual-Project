@@ -138,6 +138,77 @@
     text-decoration: underline; /* 鼠标悬浮时添加下划线，增加交互性 */
 }
 
+.top-section {
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100vh - 58px);
+    -ms-overflow-style: none;  /* 对于IE和Edge浏览器 */
+    scrollbar-width: none;
+}
+
+.notice-box {
+
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    margin-top: 20px;
+    width: 560px;
+    height: 350px;
+    border: 2px solid black;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.notice-box h3{
+    font-family: 'Protest Strike', cursive;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.description-box {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    margin-top: 20px;
+    width: 600px;
+    height: 150px;
+    border: 2px solid black;
+}
+
+.channel-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 35%;
+    object-fit: cover;
+    margin-right: 20px;
+    border: 2px solid black;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+
+.c-name {
+    margin-top: 10px;
+    margin-bottom: 0;
+    width: 450px;
+    height: 80px;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    border-bottom: black solid 2px;
+}
+.pin {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    width: 450px;
+    height: 20px;
+    overflow-wrap: break-word;
+}
+
+
 </style>
 {% endblock styles %}
 
@@ -220,4 +291,22 @@
         }
     }
 </script>
+{% endblock %}
+{% block channel_info %}
+<div class="top-section">
+    <div class="description-box">
+        <div class="description-left">
+            <img src= "{{ current_channel.image.url }}" alt="Channel Image" class="channel-image">
+        </div>
+        <div class="channel-info">
+            <h2 class="c-name">{{ current_channel.name }}</h2>
+            <h2 class="pin">Pin Code: {{ current_channel.pin_code }}</h2>
+        </div>
+    </div>
+    <div class="notice-box">
+        <h3>The teacher has not created any feedback sections for this course feedback channel yet, please wait for your teacher to create a feedback section.</h3>
+        <i class="fas fa-exclamation-triangle" style="font-size: 88px; color: #444791; display: block; text-align: center; margin-top: 20px;"></i>
+    </div>
+</div>
+
 {% endblock %}

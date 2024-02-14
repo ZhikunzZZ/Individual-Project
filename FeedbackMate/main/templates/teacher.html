@@ -5,26 +5,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch+Pop&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Protest+Strike&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <title>Teacher Main Page</title>
     {% block styles %}
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
+            border: 0;
             background-color: #f0f0f0;
         }
+
         .app-container {
             display: flex;
             flex-direction: column;
             min-width: 1470px;
-            max-height: 100vh; /* 视口高度 */
+            max-height: 100vh;
             overflow-x: auto;
             overflow-y: auto;
-
         }
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -49,6 +55,7 @@
         .welcome-text {
             margin-right: 10px;
         }
+
         .user-dropdown {
         position: relative;
         }
@@ -77,14 +84,17 @@
         .user-dropdown:hover .user-dropdown-content {
             display: block;
         }
+
         .main-container {
             display: flex;
             flex-grow: 1;
             height: calc(100vh - 58px);
         }
+
         .sidebar::-webkit-scrollbar {
             display: none;  /* 对于Chrome, Safari和Opera浏览器 */
         }
+
         .sidebar {
             width: 55px; /* 或所需宽度 */
             background-color: #EBEBEB; /* 侧边栏背景颜色 */
@@ -98,6 +108,7 @@
             overflow-y: auto;
             overflow-x: hidden;
         }
+
         .channel-divider {
             height: 0; /* 或者足够显示边框的最小高度 */
             background-color: black; /* 临时背景色以确认元素位置 */
@@ -133,14 +144,15 @@
             max-height: 100%; /* 限制图标高度，保证不溢出容器 */
             border-radius: 50%; /* 图标初始为圆形 */
         }
+
         .channel-icon-container:hover {
             border-radius: 20%; /* 悬停时变为方形 */
         }
+
         .channel-icon-container:hover .channel-icon {
             border-radius: 20%; /* 悬停时内部图标也变为方形 */
         }
 
-        /* 弹框样式 */
         .tooltip {
             position: fixed;
             visibility: hidden;
@@ -174,6 +186,7 @@
             visibility: visible;
             opacity: 1;
         }
+
         .add-channel:hover .channel-icon {
             /* 可能需要特殊的变化 */
         }
@@ -183,6 +196,7 @@
             visibility: visible;
             opacity: 1;
         }
+
         .custom-context-menu {
             position: absolute;
             background: #333;
@@ -208,6 +222,7 @@
         .custom-context-menu ul li:hover {
             background: #555;
         }
+
         .container {
             margin-bottom: 20px;
             overflow-y: auto;
@@ -219,37 +234,74 @@
         }
 
         .feedback-channel-header {
-            margin-top: 30px;
-            margin-left: 180px;
-            margin-bottom: 10px;
+            width: 70%;
+            margin: 30px auto 10px;
             font-size: 20px; /* 调整字体大小 */
             font-weight: bold; /* 字体加粗 */
             color: #000000; /* 字体颜色 */
         }
 
-        .prompt-box {
-            margin-left: auto;
-            margin-right: auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, 200px);
-            grid-gap: 20px;
-            align-items: start;
+        .guide-box {
             background-color: #D9D9D9;
-            margin-bottom: 30px;
+            margin: 20px auto;
             border-radius: 10px;
-            width: 70%; /* 如果你想要prompt-box占满整个宽度，可以设置为100% */
-            height: 70%; /* 由内容的高度决定 */
-            min-height: 250px;
+            width: 70%;
+            height: 480px;
+            min-height: 480px;
             border: 2px solid black;
             overflow-x: hidden;
             overflow-y: auto;
-            padding: 20px;
-            justify-content: center; /* 如果你希望在容器宽度较大时，卡片靠左对齐 */
+            padding-left: 20px;
+            padding-right: 20px;
+            justify-content: center;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .guide-box p {
+            margin-top: 5px;
+            margin-bottom: 0;
+            text-align: justify;
+        }
+
+        .guide-box h3 {
+            margin: 7px 0; /* 添加一些间距 */
+            font-size: 20px;
+            font-family: 'Protest Strike', cursive;
+        }
+
+        .tip-section {
+            margin-top: 20px; /* 为每个提示部分添加更多的顶部间距 */
+        }
+
+        .welcome-message {
+            font-weight: bold;
+            font-size: 28px; /* 增大字体大小 */
+            font-family: 'Protest Strike', cursive;
+        }
+
+        .prompt-box {
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            align-items: start; /* 卡片顶部对齐 */
+            background-color: #D9D9D9; /* 背景颜色 */
+            margin-bottom: 20px; /* 下边距 */
+            border-radius: 10px; /* 边框圆角 */
+            width: 70%; /* 宽度为容器的70% */
+            height: 250px; /* 高度 */
+            border: 2px solid black; /* 边框 */
+            overflow-x: auto; /* 水平方向溢出隐藏 */
+            overflow-y: hidden; /* 垂直方向溢出滚动 */
+            padding: 20px; /* 内边距 */
+            justify-content: flex-start; /* 内容靠左对齐 */
         }
 
         .channel-card {
             width: 200px; /* 固定宽度 */
+            min-width: 200px;
             height: 250px; /* 固定高度 */
+            min-height: 250px;
+            margin-left: 10px;
             border: 2px solid black;
             cursor: pointer;
             border-radius: 10px;
@@ -273,10 +325,13 @@
             width: 100%;
             height: 100px;
             text-align: center;
+            word-break: break-all;
+            overflow-wrap: break-word;
         }
 
         .prompt-box::-webkit-scrollbar {
             width: 10px;
+            height: 10px;
 
         }
 
@@ -298,6 +353,12 @@
             background: #333;
         }
 
+        strong {
+            font-style: italic;
+            font-weight: bold;
+        }
+
+
 
     </style>
     {% endblock styles %}
@@ -314,8 +375,8 @@
                 <div class="user-dropdown">
                     <img src="{{ user_image }}" alt="User Image" width="40" height="40" style="border-radius: 50%;">
                     <div class="user-dropdown-content">
-                        <a href="{% url 'personal-info' %}">Edit info</a>
-                        <a href="{% url 'logout' %}">Sign out</a>
+                        <a href="{% url 'personal-info' %}">Edit profile</a>
+                        <a href="{% url 'logout' %}">Log out</a>
                     </div>
                 </div>
             </div>
@@ -337,21 +398,64 @@
                 {% endfor %}
                 {% endblock %}
             </div>
+
+
             {% block content %}
             <div class="container">
-                <div class="feedback-channel-header">Your Feedback Channels:</div>
-                <div class="prompt-box">
-                    {% for channel in channels %}
-                    <div class="channel-card" onclick="location.href='{% url 'channel-detail' channel.id %}'">
-                        <img src="{{ channel.image.url }}" alt="Channel Image" class="channel-image">
-                        <div class="channel-id">{{ channel.name }}</div>
+                <div class="guide-box">
+                    <p class="welcome-message">Welcome to FeedbackMate!</p>
+                    <p>Here are some tips to help you get started:</p>
+
+                    <div class="tip-section">
+                        <h3>Create feedback channel</h3>
+                        <p>Want to create a feedback channel for your course?
+                            <strong> click on the '+' button in the top left corner</strong>. Then, when jumping to the create feedback
+                            channel page, fill in the information, press the Create button, and you will create a feedback channel!
+                            It's <strong>worth noting</strong> that <strong>usually a feedback channel represents a course</strong>, so we <strong>recommend setting the channel
+                            name to the course name</strong>. </p>
                     </div>
-                    {% endfor %}
+
+                    <div class="tip-section">
+                        <h3>Access designated Feedback Channel page</h3>
+                        <p>When <strong>clicking on the designated channel icon</strong> on the left or the <strong>channel card</strong> below,
+                            you will enter the designated feedback channel. <strong>Once you access the Feedback Channel page</strong>, you will be given<strong> more detailed
+                            guidance</strong>.</p>
+                    </div>
+
+                    <div class="tip-section">
+                        <h3>Edit channel information and delete channel</h3>
+                        <p> Find the feedback channel you want to operate in the left channel column,<strong> right click on its icon</strong>,
+                            then you can choose to modify the channel information or delete the channel. (Please<strong> think carefully before choosing
+                                to delete a channel</strong>, once you have completed the deletion caused, it can <strong>never be withdrawn.</strong>)</p>
+                    </div>
+
+                    <div class="tip-section">
+                        <h3>Update Profile</h3>
+                        <p><strong>Hovering over the user's image</strong> in the top right corner and <strong>clicking on the edit
+                            profile button</strong>, you will go to the update profile page. <strong>Changing the profile name will not affect the username</strong>, so don't
+                            worry about not being able to log in with your original username after the change.</p>
+                    </div>
+                </div>
+                <div class="down-box">
+                    <div class="feedback-channel-header">Your Feedback Channels:</div>
+                    <div class="prompt-box">
+                        {% for channel in channels %}
+                        <div class="channel-card" onclick="location.href='{% url 'channel-detail' channel.id %}'">
+                            <img src="{{ channel.image.url }}" alt="Channel Image" class="channel-image">
+                            <div class="channel-id">{{ channel.name }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
             {% endblock %}
+
+            {% block channel_info %}
+            {% endblock %}
+
         </div>
     </div>
+
     <div id="customContextMenu" class="custom-context-menu" style="display: none;">
         <ul>
             <li id="edit-channel">Edit Info</li>

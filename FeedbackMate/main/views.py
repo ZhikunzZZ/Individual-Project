@@ -116,7 +116,7 @@ def channel(request, channel_id):
         return redirect('teacher')
     user_channels = Channel.objects.filter(user=request.user)
     current_channel = Channel.objects.get(id=channel_id)
-    sections = Section.objects.filter(channel=current_channel)
+    sections = Section.objects.filter(channel=current_channel).order_by('title')
     user_info = UserInfo.objects.get(user=request.user)
     # Render a new template while keeping the layout consistent with 'teacher.html'
     return render(request, 'channel_detail.html', {
@@ -133,15 +133,21 @@ def channel(request, channel_id):
 def studentChannel(request, channel_id):
     user_channels = request.user.joined_channels.all()
     current_channel = Channel.objects.get(id=channel_id)
-    sections = Section.objects.filter(channel=current_channel)
+    sections = Section.objects.filter(channel=current_channel).order_by('title')
     user_info = UserInfo.objects.get(user=request.user)
-    return render(request, 'student_channel_detail.html', {
-        'username': user_info.profile_name,
-        'current_channel': current_channel,
-        'sections': sections,
-        'channels': user_channels,
-        'user_image': user_info.user_image.url,
-    })
+
+    if sections.exists():
+        # 如果存在，则重定向到第一个section的页面
+        first_section = sections.first()
+        return redirect('student-section', channel_id=channel_id, section_id=first_section.id)
+    else:
+        return render(request, 'student_channel_detail.html', {
+            'username': user_info.profile_name,
+            'current_channel': current_channel,
+            'sections': sections,
+            'channels': user_channels,
+            'user_image': user_info.user_image.url,
+        })
 
 
 @login_required(login_url='login')
@@ -241,7 +247,7 @@ def section(request, channel_id, section_id):
         return redirect('teacher')
     user_channels = Channel.objects.filter(user=request.user)
     current_channel = Channel.objects.get(id=channel_id)
-    sections = Section.objects.filter(channel=current_channel)
+    sections = Section.objects.filter(channel=current_channel).order_by('title')
     current_section = Section.objects.get(id=section_id)
 
     comments = Comment.objects.filter(section=current_section)
@@ -304,7 +310,7 @@ def section(request, channel_id, section_id):
 def studentSection(request, channel_id, section_id):
     user_channels = request.user.joined_channels.all()
     current_channel = Channel.objects.get(id=channel_id)
-    sections = Section.objects.filter(channel=current_channel)
+    sections = Section.objects.filter(channel=current_channel).order_by('title')
     current_section = Section.objects.get(id=section_id)
 
     search_query = request.GET.get('search', '')
@@ -322,9 +328,9 @@ def studentSection(request, channel_id, section_id):
         )
     )
     if sort == 'user_first':
-        comments = comments_query.order_by('-current_user_comment', '-likes')
+        comments = comments_query.order_by('-current_user_comment', '-created_at')
     else:
-        comments = comments_query.order_by('-likes', '-current_user_comment')
+        comments = comments_query.order_by('-likes', '-created_at')
 
     user_info = UserInfo.objects.get(user=request.user)
 
@@ -549,6 +555,7 @@ def update_comment_reply(request, comment_id):
 
 @unauthenticated_user
 def loginPage(request):
+    username = ''
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -565,7 +572,7 @@ def loginPage(request):
                 return redirect('index')
         else:
             messages.error(request, 'Username or password incorrect')
-    return render(request, 'login.html')
+    return render(request, 'login.html', {'username': username})
 
 
 @login_required(login_url='login')
@@ -577,13 +584,14 @@ def logoutUser(request):
 @unauthenticated_user
 def registerPage(request):
     form = CreateUserForm()
+    user_type = 'teacher'
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
+        user_type = request.POST.get('user_type')
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
-            user_type = request.POST.get('user_type')
-            UserInfo.objects.create(user=user, profile_name='User')
+            UserInfo.objects.create(user=user, profile_name=username)
 
             if user_type == 'student':
                 group, created = Group.objects.get_or_create(name='student')
@@ -594,6 +602,9 @@ def registerPage(request):
 
             messages.success(request, 'Account have created:  ' + username)
             return redirect('login')
-
-    context = {'form': form}
-    return render(request, 'register.html', context)
+    print(user_type)
+    context = {'form': form, 'user_type': user_type}
+    return render(request, 'register.html', {
+        'form': form,
+        'user_type': user_type,
+    })

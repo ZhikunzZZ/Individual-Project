@@ -73,6 +73,8 @@
     margin-bottom: 0;
     width: 450px;
     height: 50px;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 .section-title {
@@ -83,13 +85,44 @@
 
 .section-description{
     white-space: normal;
-    word-wrap: break-word;
+    word-break: break-all;
     overflow-wrap: break-word;
     width: 400px;
-    height: 50px;
+    height: 70px;
     border: 1px solid black;
     border-radius: 4px;
-    padding: 15px;
+    padding: 5px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    text-align: justify;
+}
+
+/* 滚动条的整体样式 */
+.section-description::-webkit-scrollbar {
+    width: 5px;
+
+}
+
+/* 滚动条轨道的样式 */
+.section-description::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+/* 滚动条滑块的样式 */
+.section-description::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 20px;
+}
+
+/* 当鼠标悬停在滚动条滑块上时的样式 */
+.section-description::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* 当滚动条滑块被点击时的样式 */
+.section-description::-webkit-scrollbar-thumb:active {
+    background: #333;
 }
 
 .rating-box {
@@ -262,8 +295,8 @@
 
 .comment-text {
     white-space: normal; /* 允许文本在需要时换行 */
-    word-wrap: break-word; /* 在单词太长而无法在一行中显示时，允许它断开到下一行 */
-    overflow-wrap: break-word; /* 同上，确保文本不会溢出容器 */
+    word-break: break-all;
+    overflow-wrap: break-word;
     margin-bottom: 30px;
 }
 
@@ -302,9 +335,10 @@
     margin-top: -20px;
     margin-bottom: 25px;
     border-radius: 5px;
-    height: 40px;
     padding: 10px;
     border: 2px solid #000000;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 .owner-image {
@@ -474,6 +508,12 @@
 .keyword-summary .keyword {
     font-weight: bold;
 }
+
+.no-comments {
+    margin-top: 30px;
+    font-size: 20px;
+    text-align: center;
+}
 </style>
 
 
@@ -605,49 +645,53 @@
             <button type="submit">Search</button>
         </form>
         </div>
-    {% for comment in comments %}
-    <div class="comment">
-        <img src="{% if comment.is_anonymous and comment.user != request.user %}/media/img/user.png{% else %}{{ comment.user.userinfo.user_image.url }}{% endif %}" alt="User Image" class="user-image">
-        <div class="comment-main" {% if comment.read %}style="border-color: #444791;"{% endif %}>
-            <p class="comment-username">
-                {% if comment.is_anonymous %}
-                    {% if comment.user == request.user %}
-                        You (Anonymous)
+    {% if comments.exists %}
+        {% for comment in comments %}
+        <div class="comment">
+            <img src="{% if comment.is_anonymous and comment.user != request.user %}/media/img/user.png{% else %}{{ comment.user.userinfo.user_image.url }}{% endif %}" alt="User Image" class="user-image">
+            <div class="comment-main" {% if comment.read %}style="border-color: #444791;"{% endif %}>
+                <p class="comment-username">
+                    {% if comment.is_anonymous %}
+                        {% if comment.user == request.user %}
+                            You (Anonymous)
+                        {% else %}
+                            Anonymous
+                        {% endif %}
                     {% else %}
-                        Anonymous
+                        {% if comment.user == request.user %}
+                            You
+                        {% else %}
+                            {{ comment.user.userinfo.profile_name }}
+                        {% endif %}
                     {% endif %}
-                {% else %}
-                    {% if comment.user == request.user %}
-                        You
+                </p>
+                <p class="comment-text">{{ comment.text }}</p>
+                <div class="comment-actions">
+                    <div class="likes">
+                        <i class="fas fa-thumbs-up"></i>
+                        <span class="like-count">{{ comment.likes }}</span>
+                    </div>
+                    {% if comment.read %}
+                        <i class="fas fa-eye read-indicator"></i>
                     {% else %}
-                        {{ comment.user.userinfo.profile_name }}
+                        <button class="mark-as-read-btn" data-comment-id="{{ comment.id }}">Mark as Seen</button>
                     {% endif %}
-                {% endif %}
-            </p>
-            <p class="comment-text">{{ comment.text }}</p>
-            <div class="comment-actions">
-                <div class="likes">
-                    <i class="fas fa-thumbs-up"></i>
-                    <span class="like-count">{{ comment.likes }}</span>
+                    <i class="fas fa-reply reply-btn" data-comment-id="{{ comment.id }}"></i>
                 </div>
-                {% if comment.read %}
-                    <i class="fas fa-eye read-indicator"></i>
-                {% else %}
-                    <button class="mark-as-read-btn" data-comment-id="{{ comment.id }}">Mark as Seen</button>
-                {% endif %}
-                <i class="fas fa-reply reply-btn" data-comment-id="{{ comment.id }}"></i>
-            </div>
-            <div class="reply" {% if not comment.reply %}style="display:none;"{% endif %}>
-                <img src="{{ comment.section.channel.user.userinfo.user_image.url }}" alt="Owner Image" class="owner-image">
-                <p class="reply-content">{{ comment.reply }}</p>
-            </div>
-            <div class="reply-box" style="display:none;">
-                <textarea class="reply-text">{{ comment.reply }}</textarea>
-                <button class="submit-reply" data-comment-id="{{ comment.id }}">Submit</button>
+                <div class="reply" {% if not comment.reply %}style="display:none;"{% endif %}>
+                    <img src="{{ comment.section.channel.user.userinfo.user_image.url }}" alt="Owner Image" class="owner-image">
+                    <p class="reply-content">{{ comment.reply }}</p>
+                </div>
+                <div class="reply-box" style="display:none;">
+                    <textarea class="reply-text">{{ comment.reply }}</textarea>
+                    <button class="submit-reply" data-comment-id="{{ comment.id }}">Submit</button>
+                </div>
             </div>
         </div>
-    </div>
-    {% endfor %}
+        {% endfor %}
+    {% else %}
+        <p class="no-comments">No comment yet.</p>
+    {% endif %}
     </div>
     <div class="keyword-summary">
         <h3>Keyword summary</h3>
@@ -775,4 +819,7 @@
 
 
 
+{% endblock %}
+
+{% block channel_info %}
 {% endblock %}

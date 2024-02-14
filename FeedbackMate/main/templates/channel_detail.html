@@ -137,6 +137,130 @@
     text-decoration: underline; /* 鼠标悬浮时添加下划线，增加交互性 */
 }
 
+.top-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* 水平居中 */
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100vh - 58px);
+    -ms-overflow-style: none;  /* 对于IE和Edge浏览器 */
+    scrollbar-width: none;
+}
+
+.notice-box {
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    width: 560px;
+    min-height: 400px;
+    height: 70%;
+    border: 2px solid black;
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: 20px 150px;
+    justify-content: center;
+    font-family: 'Roboto', sans-serif;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.notice-box p {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    text-align: justify;
+}
+
+.notice-box h3 {
+    margin: 7px 0; /* 添加一些间距 */
+    font-size: 20px;
+    font-family: 'Protest Strike', cursive;
+}
+
+.tip-section {
+    margin-top: 20px; /* 为每个提示部分添加更多的顶部间距 */
+}
+
+/* 滚动条的整体样式 */
+.notice-box::-webkit-scrollbar {
+    width: 5px;
+
+}
+
+/* 滚动条轨道的样式 */
+.notice-box::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+/* 滚动条滑块的样式 */
+.notice-box::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 20px;
+}
+
+/* 当鼠标悬停在滚动条滑块上时的样式 */
+.notice-box::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* 当滚动条滑块被点击时的样式 */
+.notice-box::-webkit-scrollbar-thumb:active {
+    background: #333;
+}
+
+.description-box {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    margin-top: 20px;
+    width: 600px;
+    height: 150px;
+    border: 2px solid black;
+}
+
+.channel-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 35%;
+    object-fit: cover;
+    margin-right: 20px;
+    border: 2px solid black;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+
+.c-name {
+    margin-top: 10px;
+    margin-bottom: 0;
+    width: 450px;
+    height: 80px;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    border-bottom: black solid 2px;
+}
+.pin {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    width: 450px;
+    height: 20px;
+    overflow-wrap: break-word;
+}
+
+ul li strong {
+    list-style: inside; /* 确保项目符号在li元素内部，以便颜色应用 */
+    font-family: 'Protest Strike', cursive;
+    font-style: normal;
+
+}
+ul li p {
+    margin-top: 2px;
+    margin-bottom: 5px;
+}
+
 </style>
 {% endblock styles %}
 
@@ -209,4 +333,72 @@
         });
     });
 </script>
+{% endblock %}
+
+{% block channel_info %}
+<div class="top-section">
+    <div class="description-box">
+        <div class="description-left">
+            <img src= "{{ current_channel.image.url }}" alt="Channel Image" class="channel-image">
+        </div>
+        <div class="channel-info">
+            <h2 class="c-name">{{ current_channel.name }}</h2>
+            <h2 class="pin">Pin Code: {{ current_channel.pin_code }}</h2>
+        </div>
+    </div>
+    <div class="notice-box">
+        <p><strong>The information below will show you how to use and manage your feedback channel:</strong></p>
+
+        <div class="tip-section">
+            <h3>Create section for feedback channel</h3>
+            <p><strong>A section usually represents a lecture, a quiz, an exam, etc</strong>. Creating multiple sections can help
+                you collect feedback on various parts of the course. If you want to create a section, <strong>click the "Create Section" button at the top left</strong>.</p>
+        </div>
+
+        <div class="tip-section">
+            <h3>Access designated Section page</h3>
+            <p>Select the section which you want to access in the section column on the left, click on it, then you can access the specified section.</p>
+        </div>
+
+        <div class="tip-section">
+            <h3>What you can do in the section page?</h3>
+            <ul>
+                <li><strong>Modify or delete sections</strong>
+                    <p>- Click the "Edit section" or "Delete section" button can modify or delete current section.
+                    </p>
+                </li>
+                <li><strong>View Ratings</strong>
+                    <p>- The top right part is the ratings box, where you can see the average score of the current section,
+                        the number of raters and the percentage of each rating.
+                    </p>
+                </li>
+                <li><strong>View feedback comment</strong>
+                    <p>- The bottom left part is the comment box, where you can see the feedback comments that students have
+                        left for the current section.
+                    </p>
+                    <p>
+                       - By clicking on the reply icon, you can provide feedback for the comment, and you can edit or delete
+                        the reply at any time! (If you want to delete a reply, just leaving it blank when modifying it.)
+                    </p>
+                    <p>
+                       - By clicking on the reply icon, you can provide feedback for the comment, and you can edit or delete
+                        the reply at any time! (If you want to delete a reply, just leaving it blank when modifying it.)
+                    </p>
+                    <p>
+                       - Click the "Mark as Seen" button can mark the comment as read. Combined with sorting, it can help you locate
+                        unread comments faster.
+                    </p>
+                </li>
+                <li><strong>Keyword summary</strong>
+                    <p>
+                        - The bottom right part is the keyword summary box, this box will show you the keywords that appear more frequently
+                        and the number of times it occurs. Combined with the search box, which can help you quickly find the feedback that
+                        occurs more frequently.
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
