@@ -72,7 +72,11 @@ def editPersonalInfoPage(request):
         if user_image:
             user_info.user_image = user_image
         user_info.save()
-        return redirect('teacher')
+        messages.success(request, 'Profile modified successfully!')
+        if request.user.groups == 'teacher':
+            return redirect('teacher')
+        else:
+            return redirect('student')
 
     user_info = UserInfo.objects.get(user=request.user)
     return render(request, 'edit_user_info.html', {
@@ -96,6 +100,7 @@ def edit_channel(request, channel_id):
         if channel_image:
             channel.image = channel_image
         channel.save()
+        messages.success(request, 'Channel modified successfully!')
         return redirect('channel-detail', channel_id=channel.id)
     return render(request, 'edit_channel.html', {
         'channel': channel,
@@ -162,6 +167,7 @@ def joinChannel(request):
                 messages.info(request, 'You have already joined this channel.')
             else:
                 channel.students.add(request.user)
+                messages.success(request, 'Join channel successfully!')
                 return redirect('student-channel-detail', channel_id=channel.id)
         except Channel.DoesNotExist:
             messages.error(request, 'Invalid PIN code. Please try again.')
@@ -196,6 +202,7 @@ def createChannel(request):
             new_channel = Channel.objects.create(name=channel_name, user=request.user, image=channel_image, pin_code=pin_code)
         else:
             new_channel = Channel.objects.create(name=channel_name, user=request.user, pin_code=pin_code)
+        messages.success(request, 'Create channel successfully!')
         return redirect('channel-detail', channel_id=new_channel.id)
     user_info = UserInfo.objects.get(user=request.user)
     return render(request, 'create_channel.html', {
@@ -212,6 +219,7 @@ def createSection(request, channel_id):
         section_title = request.POST.get('channel-name')
         section_des = request.POST.get('channel-info')
         new_section = Section.objects.create(channel=channel, title=section_title, description=section_des)
+        messages.success(request, 'Section created successfully!')
         return redirect('section', channel_id=channel_id, section_id=new_section.id)
     user_info = UserInfo.objects.get(user=request.user)
     return render(request, 'create_section.html', {
@@ -228,6 +236,7 @@ def delete_channel(request, channel_id):
     try:
         channel = Channel.objects.get(id=channel_id)
         channel.delete()
+        messages.success(request, 'Channel deleted successfully!')
         return JsonResponse({'success': True})
     except Channel.DoesNotExist:
         return JsonResponse({'error': 'Channel not found'}, status=404)
@@ -402,6 +411,7 @@ def edit_section(request, channel_id, section_id):
         if section_description:
             section.description = section_description
         section.save()
+        messages.success(request, 'Modified section successfully!')
         return redirect('section', channel_id=channel_id, section_id=section_id)
 
     return render(request, 'edit_section_info.html', {
@@ -418,6 +428,7 @@ def delete_section(request, section_id):
     section = get_object_or_404(Section, id=section_id, channel__user=request.user)
     channel_id = section.channel.id  # Capture the channel id to redirect after deletion
     section.delete()
+    messages.success(request, 'Deleted section successfully!')
     return HttpResponseRedirect(reverse('channel-detail', args=[channel_id]))
 
 
@@ -428,6 +439,7 @@ def exit_channel(request, channel_id):
     if request.user in channel.students.all():
         # 如果是成员，则将其从频道中移除
         channel.students.remove(request.user)
+        messages.success(request, 'Exit channel successfully!')
     return redirect('student')
 
 
@@ -445,7 +457,7 @@ def submit_feedback(request, section_id):
             text=text,
             is_anonymous=is_anonymous
         )
-
+        messages.success(request, 'Submit feedback comment successfully!')
         # 重定向到合适的页面
         return redirect('student-section', channel_id=section.channel.id, section_id=section_id)
 
@@ -526,6 +538,7 @@ def delete_comment(request, comment_id):
     if request.method == 'POST':
         comment = get_object_or_404(Comment, pk=comment_id, user=request.user)  # Ensures the user can only delete their own comments
         comment.delete()
+        messages.success(request, 'delete feedback comment successfully!')
         return JsonResponse({'success': True})
     return JsonResponse({'success': False}, status=400)
 

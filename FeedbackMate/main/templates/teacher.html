@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Protest+Strike&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Protest+Revolution&display=swap" rel="stylesheet">
     <title>Teacher Main Page</title>
     {% block styles %}
     <style>
@@ -44,7 +45,7 @@
         .logo {
             font-size: 24px;
             font-weight: bold;
-            font-family: 'Rubik Glitch Pop', sans-serif;
+            font-family: 'Protest Revolution', sans-serif;
         }
 
         .user-info {
@@ -358,6 +359,36 @@
             font-weight: bold;
         }
 
+        #messageModal {
+            position: fixed; /* 固定定位，确保模态框总是相对于视口定位 */
+            z-index: 1000; /* 确保模态框在其他内容之上 */
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%); /* 使用变换向左移动模态框的一半宽度，确保它的中心对齐视口的中心 */
+            width: auto; /* 宽度自动，根据内容调整 */
+            max-width: 450px; /* 最大宽度，避免模态框过宽 */
+            overflow: auto; /* 如果内容超出模态框大小，则显示滚动条 */
+            display: flex; /* 使用Flex布局 */
+            align-items: center; /* 垂直居中内容 */
+            justify-content: center; /* 水平居中内容 */
+            flex-direction: column; /* 子元素垂直排列 */
+        }
+
+        #messageModalContent {
+            border: 2px solid black;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px; /* 圆角 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 阴影效果 */
+            margin: 0 20px; /* 左右边距，确保在小屏幕上也有间距 */
+        }
+
+        /* 消息文本样式 */
+        #modalText {
+            margin-top: 15px; /* 与关闭按钮有一定间距 */
+            font-size: 16px; /* 文本大小 */
+        }
+
 
 
     </style>
@@ -572,6 +603,30 @@
             return cookieValue;
         }
     </script>
+    <div id="messageModal" style="display:none;">
+        <div id="messageModalContent">
+            <p id="modalText">Text here</p>
+        </div>
+    </div>
+
+    {% if messages %}
+    <script>
+        window.onload = function() {
+            var messages = "";
+            {% for message in messages %}
+            messages += "<p>{{ message }}</p>";
+            {% endfor %}
+
+            document.getElementById('messageModalContent').innerHTML = messages;
+            document.getElementById('messageModal').style.display = 'block';
+
+            // 设置计时器，2秒后执行关闭弹窗的函数
+            setTimeout(function() {
+                document.getElementById('messageModal').style.display = 'none';
+            }, 3000); // 2000毫秒后自动执行
+        };
+    </script>
+    {% endif %}
 
 </body>
 

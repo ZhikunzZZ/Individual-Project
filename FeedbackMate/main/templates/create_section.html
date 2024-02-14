@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch+Pop&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Protest+Revolution&display=swap" rel="stylesheet">
     <title>Create Section Page</title>
     <style>
         body {
@@ -30,7 +30,7 @@
         .logo {
             font-size: 24px;
             font-weight: bold;
-            font-family: 'Rubik Glitch Pop', sans-serif;
+            font-family: 'Protest Revolution', sans-serif;
         }
 
         .user-info {
@@ -188,7 +188,7 @@
             <form onsubmit="return validateForm()" method="POST" action="" enctype="multipart/form-data">
                 {% csrf_token %}
                 <label for="channel-name">Section title:</label>
-                <input type="text" id="channel-name" name="channel-name" maxlength="70">
+                <input type="text" id="channel-name" name="channel-name" maxlength="30">
 
                 <label for="channel-info">Section info:</label>
                 <textarea id="channel-info" name="channel-info" oninput="updateCharCount()" maxlength="500"></textarea>
