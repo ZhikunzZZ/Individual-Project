@@ -6,7 +6,7 @@ from .forms import CreateUserForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from .decorators import unauthenticated_user, teacher_required, student_required
 from .models import Channel, Section, Comment, UserInfo
 from django.views.decorators.http import require_POST
@@ -569,6 +569,7 @@ def update_comment_reply(request, comment_id):
 @unauthenticated_user
 def loginPage(request):
     username = ''
+    password = ''
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -585,8 +586,54 @@ def loginPage(request):
                 return redirect('index')
         else:
             messages.error(request, 'Username or password incorrect')
-    return render(request, 'login.html', {'username': username})
+    return render(request, 'login.html', {'username': username, 'password': password})
 
+
+def ForgotPage(request):
+    username = ''
+    email = ''
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+
+        try:
+            # 试图获取匹配的用户
+            user = User.objects.get(username=username, email=email)
+
+            # 如果找到用户，使用用户的ID构建重定向URL
+            messages.success(request, 'The account has been found and you can now change the password for:  '
+                             + username)
+            return redirect(reverse('reset', args=[user.id]))
+        except User.DoesNotExist:
+            # 如果没有找到用户，返回到相同页面并显示错误信息
+            messages.error(request, 'No matching account found. Please check your details and try again.')
+            return render(request, 'reset_password_1.html', {'username': username, 'email': email})
+    return render(request, 'reset_password_1.html', {'username': username, 'email': email})
+
+
+def ResetPage(request, user_id):
+    password1 = ''
+    password2 = ''
+    if request.method == 'POST':
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        if len(password1) < 8:
+            messages.error(request, 'Password must contain at least 8 characters.')
+            return render(request, 'reset_password_2.html', {'user_id': user_id, 'password1': password1,
+                                                             'password2': password2})
+        elif password1 == password2:
+            user = User.objects.get(id=user_id)
+            user.set_password(password1)
+            user.save()
+            messages.success(request, 'Password has been reset successfully for: ' + user.username)
+            return redirect('login')
+        else:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'reset_password_2.html', {'user_id': user_id, 'password1': password1,
+                                                             'password2': password2})
+
+    return render(request, 'reset_password_2.html', {'user_id': user_id,
+                                                     'password1': password1, 'password2': password2})
 
 @login_required(login_url='login')
 def logoutUser(request):
