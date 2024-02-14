@@ -589,6 +589,7 @@ def loginPage(request):
     return render(request, 'login.html', {'username': username, 'password': password})
 
 
+@unauthenticated_user
 def ForgotPage(request):
     username = ''
     email = ''
@@ -611,6 +612,7 @@ def ForgotPage(request):
     return render(request, 'reset_password_1.html', {'username': username, 'email': email})
 
 
+@unauthenticated_user
 def ResetPage(request, user_id):
     password1 = ''
     password2 = ''
